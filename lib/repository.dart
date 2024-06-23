@@ -39,11 +39,15 @@ class Repository extends GetxController {
 
   String? get syncCode => box.read("syncCode");
   set syncCode(String? value) {
+    if (value == "") value = null;
     box.write("syncCode", value);
     isSyncEnabled = true;
   }
 
-  bool get isSyncEnabled => box.read("isSyncEnabled") ?? false;
+  bool get isSyncEnabled {
+    if (syncCode == null) return false;
+    return box.read("isSyncEnabled") ?? false;
+  }
   set isSyncEnabled(bool isSyncEnabled) {
     if (isSyncEnabled) {
       listenToMusics();
@@ -100,10 +104,6 @@ class Repository extends GetxController {
           (event) {},
         );
   }
-
-  // String generateNewtoken() {
-
-  // }
 
   void saveMusic() {
     box.write("music", musicList);

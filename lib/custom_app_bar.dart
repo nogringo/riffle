@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -48,68 +50,74 @@ class SettingsMenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MenuAnchor(
-      builder:
-          (BuildContext context, MenuController controller, Widget? child) {
-        return IconButton(
-          onPressed: () {
-            if (controller.isOpen) {
-              controller.close();
-            } else {
-              controller.open();
-            }
-          },
-          icon: const Icon(Icons.settings),
-        );
-      },
-      menuChildren: [
-        if (Repository.to.syncCode != null)
+    return GetBuilder<Repository>(builder: (c) {
+      return MenuAnchor(
+        builder:
+            (BuildContext context, MenuController controller, Widget? child) {
+          return IconButton(
+            onPressed: () {
+              if (controller.isOpen) {
+                controller.close();
+              } else {
+                controller.open();
+              }
+            },
+            icon: const Icon(Icons.settings),
+          );
+        },
+        menuChildren: [
+          if (c.syncCode != null)
+            ListTile(
+              onTap: () async {
+                await Clipboard.setData(
+                  ClipboardData(text: Repository.to.syncCode!),
+                );
+                toastification.show(
+                  style: ToastificationStyle.simple,
+                  title: const Text("Sync code copied"),
+                  alignment: Alignment.bottomCenter,
+                  autoCloseDuration: const Duration(seconds: 4),
+                  applyBlurEffect: true,
+                );
+              },
+              leading: const Icon(Icons.copy),
+              title: const Text("Copy Sync code"),
+            ),
+          if (c.syncCode != null)
+            ListTile(
+              onTap: () {
+                Get.dialog(const QrCodePopupView());
+              },
+              leading: const Icon(Icons.qr_code),
+              title: const Text("Create QR code"),
+            ),
+          if (GetPlatform.isMobile)
+            ListTile(
+              onTap: () {
+                Get.to(const BarcodeScannerWithOverlay());
+              },
+              leading: const Icon(Icons.qr_code_scanner),
+              title: const Text("Scan QR code"),
+            ),
           ListTile(
             onTap: () async {
-              await Clipboard.setData(const ClipboardData(text: "your text"));
+              await Clipboard.setData(
+                ClipboardData(text: jsonEncode(Repository.to.musicList)),
+              );
               toastification.show(
                 style: ToastificationStyle.simple,
-                title: const Text("Sync code copied"),
+                title: const Text("You data has been copied"),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 4),
                 applyBlurEffect: true,
               );
             },
-            leading: const Icon(Icons.copy),
-            title: const Text("Copy Sync code"),
+            leading: const Icon(Icons.upload),
+            title: const Text("Export your data"),
           ),
-        if (Repository.to.syncCode != null)
-          ListTile(
-            onTap: () {
-              Get.dialog(const QrCodePopupView());
-            },
-            leading: const Icon(Icons.qr_code),
-            title: const Text("Create QR code"),
-          ),
-        if (GetPlatform.isMobile)
-          ListTile(
-            onTap: () {
-              Get.to(const BarcodeScannerWithOverlay());
-            },
-            leading: const Icon(Icons.qr_code_scanner),
-            title: const Text("Scan QR code"),
-          ),
-        ListTile(
-          onTap: () async {
-            await Clipboard.setData(const ClipboardData(text: "your text"));
-            toastification.show(
-              style: ToastificationStyle.simple,
-              title: const Text("You data has been copied"),
-              alignment: Alignment.bottomCenter,
-              autoCloseDuration: const Duration(seconds: 4),
-              applyBlurEffect: true,
-            );
-          },
-          leading: const Icon(Icons.upload),
-          title: const Text("Export your data"),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 }
 
