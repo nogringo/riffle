@@ -87,7 +87,7 @@ class _DesktopWindowButtonsState extends State<DesktopWindowButtons>
   @override
   void onWindowBlur() {
     setState(() {
-      iconsColor = Get.theme.colorScheme.inversePrimary;
+      // iconsColor = Get.theme.colorScheme.inversePrimary;
     });
     super.onWindowBlur();
   }

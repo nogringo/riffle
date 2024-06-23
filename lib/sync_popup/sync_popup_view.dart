@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:riffle/sync_popup/sync_popup_controller.dart';
-import 'package:riffle/theme_controller.dart';
 
 class SyncPopupView extends StatelessWidget {
   const SyncPopupView({super.key});
@@ -18,71 +16,53 @@ class SyncPopupView extends StatelessWidget {
           CloseButton(),
         ],
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Focus(
-            onFocusChange: SyncPopupController.to.onFocusChange,
-            child: GetBuilder<SyncPopupController>(
-              builder: (c) {
-                return TextField(
-                  controller: c.syncCodeController,
-                  decoration: InputDecoration(
-                    labelText: "Sync code",
-                    suffixIcon: IconButton(
-                      tooltip: "Generate your Sync code",
+      content: Focus(
+        onFocusChange: SyncPopupController.to.onFocusChange,
+        child: GetBuilder<SyncPopupController>(
+          builder: (c) {
+            return TextField(
+              controller: c.syncCodeController,
+              decoration: InputDecoration(
+                labelText: "Sync code",
+                suffixIcon: Builder(
+                  builder: (context) {
+                    if (GetPlatform.isMobile) {
+                      return PopupMenuButton(
+                        onSelected: c.selectSyncPopupValue,
+                        itemBuilder: (BuildContext context) {
+                          return [
+                            const PopupMenuItem(
+                              value: SyncPopupMenu.generateSyncCode,
+                              child: ListTile(
+                                leading: Icon(Icons.generating_tokens),
+                                title: Text("Generate your Sync code"),
+                              ),
+                            ),
+                            if (GetPlatform.isMobile)
+                              const PopupMenuItem(
+                                value: SyncPopupMenu.scanQrCode,
+                                child: ListTile(
+                                  leading: Icon(Icons.qr_code_scanner),
+                                  title: Text("Scan QR code"),
+                                ),
+                              ),
+                          ];
+                        },
+                      );
+                    }
+                    return IconButton(
                       onPressed: c.generateNewSyncCode,
                       icon: const Icon(Icons.generating_tokens),
-                    ),
-                    errorText: [null, "Field required"][c.syncCodeError],
-                  ),
-                  onChanged: c.onSyncCodeChange,
-                  onSubmitted: (_) => c.startSync,
-                );
-              },
-            ),
-          ),
-          GetBuilder<SyncPopupController>(
-            builder: (c) {
-              if (c.syncCode.isEmpty) return Container();
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: Get.height / 3,
-                    maxWidth: Get.height / 3,
-                  ),
-                  child: Theme(
-                    data: ThemeController.to.lightTheme,
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: PrettyQrView.data(
-                          data: c.syncCode,
-                          errorCorrectLevel: QrErrorCorrectLevel.H,
-                          decoration: PrettyQrDecoration(
-                            image: PrettyQrDecorationImage(
-                              image: const AssetImage(
-                                'assets/music_note_24dp_FILL0_wght400_GRAD0_opsz24.png',
-                              ),
-                              colorFilter: ColorFilter.mode(
-                                Get.theme.colorScheme.primaryContainer,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            shape: PrettyQrSmoothSymbol(
-                              color: Get.theme.colorScheme.primaryContainer,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ],
+                errorText: [null, "Field required"][c.syncCodeError],
+              ),
+              onChanged: c.onSyncCodeChange,
+              onSubmitted: (_) => c.startSync,
+            );
+          },
+        ),
       ),
       actions: [
         TextButton(

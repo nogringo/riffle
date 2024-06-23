@@ -41,7 +41,6 @@ class Repository extends GetxController {
   set syncCode(String? value) {
     box.write("syncCode", value);
     isSyncEnabled = true;
-    update();
   }
 
   bool get isSyncEnabled => box.read("isSyncEnabled") ?? false;
@@ -91,6 +90,7 @@ class Repository extends GetxController {
   }
 
   void listenToMusics() {
+    syncSubscription?.cancel();
     syncSubscription = FirebaseFirestore.instance
         .collection("users")
         .doc(syncCode)

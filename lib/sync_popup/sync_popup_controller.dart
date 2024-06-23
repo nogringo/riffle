@@ -3,10 +3,14 @@ import 'package:get/get.dart';
 import 'package:riffle/repository.dart';
 import 'package:uuid/uuid.dart';
 
+enum SyncPopupMenu { generateSyncCode, scanQrCode }
+
 class SyncPopupController extends GetxController {
   static SyncPopupController get to => Get.find();
 
-  TextEditingController syncCodeController = TextEditingController(text: Repository.to.syncCode);
+  TextEditingController syncCodeController = TextEditingController(
+    text: Repository.to.syncCode,
+  );
   int syncCodeError = 0;
 
   String get syncCode => syncCodeController.text;
@@ -37,5 +41,15 @@ class SyncPopupController extends GetxController {
 
     Repository.to.syncCode = syncCode;
     Get.back();
+  }
+
+  void selectSyncPopupValue(SyncPopupMenu value) {
+    switch (value) {
+      case SyncPopupMenu.generateSyncCode:
+        generateNewSyncCode();
+        break;
+      case SyncPopupMenu.scanQrCode:
+        generateNewSyncCode();
+    }
   }
 }
