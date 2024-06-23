@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:riffle/sync_popup/sync_popup_controller.dart';
 import 'package:riffle/theme_controller.dart';
 
