@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:riffle/constant.dart';
+import 'package:riffle/firebase_options.dart';
 import 'package:riffle/home/home_page.dart';
 import 'package:riffle/my_audio_handler.dart';
 import 'package:riffle/repository.dart';
@@ -23,6 +26,13 @@ void main() async {
   await SystemTheme.accentColor.load();
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  if (kDebugMode) {
+    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  }
 
   await GetStorage.init();
 
@@ -103,9 +113,9 @@ class MyApp extends StatelessWidget {
           return GetMaterialApp(
             title: 'Riffle',
             debugShowCheckedModeBanner: kDebugMode,
-            theme: c.theme,
+            theme: c.lightTheme,
             darkTheme: c.darkTheme,
-            themeMode: ThemeMode.system,
+            themeMode: ThemeMode.dark,
             home: const HomePage(),
           );
         },

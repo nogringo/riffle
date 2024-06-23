@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:riffle/functions.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/my_audio_handler.dart';
+import 'package:riffle/sync_popup/sync_popup_view.dart';
 import 'package:riffle/theme_controller.dart';
 
 enum RepeatMode { noRepeat, repeatOne, repeat }
@@ -24,12 +27,33 @@ class Repository extends GetxController {
   PlayerState? playerStateOnSeekStart;
   Duration playerCurrentPosition = Duration.zero;
 
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? syncSubscription;
+
   double get playerSeekerPosition {
     double position = playerCurrentPosition.inMilliseconds /
         selectedMusic!.duration.inMilliseconds;
     if (position > 1) return 1;
     if (position < 0) return 0;
     return position;
+  }
+
+  String? get syncCode => box.read("syncCode");
+  set syncCode(String? value) {
+    box.write("syncCode", value);
+    isSyncEnabled = true;
+    update();
+  }
+
+  bool get isSyncEnabled => box.read("isSyncEnabled") ?? false;
+  set isSyncEnabled(bool isSyncEnabled) {
+    if (isSyncEnabled) {
+      listenToMusics();
+    } else {
+      syncSubscription?.cancel();
+    }
+
+    box.write("isSyncEnabled", isSyncEnabled);
+    update();
   }
 
   Repository() {
@@ -56,6 +80,8 @@ class Repository extends GetxController {
       playerCurrentPosition = newPosition;
       update();
     });
+
+    if (isSyncEnabled) listenToMusics();
   }
 
   @override
@@ -63,6 +89,21 @@ class Repository extends GetxController {
     if (GetPlatform.isMobile) MyAudioHandler.to.update();
     super.update(ids, condition);
   }
+
+  void listenToMusics() {
+    syncSubscription = FirebaseFirestore.instance
+        .collection("users")
+        .doc(syncCode)
+        .collection("musics")
+        .snapshots()
+        .listen(
+          (event) {},
+        );
+  }
+
+  // String generateNewtoken() {
+
+  // }
 
   void saveMusic() {
     box.write("music", musicList);
@@ -173,4 +214,12 @@ class Repository extends GetxController {
   void nextTrack() {}
 
   void skipToNext() {}
+
+  void onSyncSwitchToggle(bool value) async {
+    if (value) {
+      return Get.dialog(const SyncPopupView());
+    }
+
+    isSyncEnabled = value;
+  }
 }

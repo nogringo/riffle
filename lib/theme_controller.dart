@@ -5,13 +5,13 @@ import 'package:system_theme/system_theme.dart';
 class ThemeController extends GetxController {
   static ThemeController get to => Get.find();
 
-  ThemeData? theme = ThemeData(
+  ThemeData lightTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: SystemTheme.accentColor.accent,
       brightness: Brightness.light,
     ),
   );
-  ThemeData? darkTheme = ThemeData(
+  ThemeData darkTheme = ThemeData(
     colorScheme: ColorScheme.fromSeed(
       seedColor: SystemTheme.accentColor.accent,
       brightness: Brightness.dark,
@@ -20,7 +20,7 @@ class ThemeController extends GetxController {
 
   ThemeController() {
     SystemTheme.onChange.listen((color) {
-      theme = ThemeData(
+      lightTheme = ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: color.accent,
           brightness: Brightness.light,
@@ -36,8 +36,8 @@ class ThemeController extends GetxController {
     });
   }
 
-  void changeTheme(ThemeData? newTheme) {
-    theme = newTheme;
+  void changeTheme(ThemeData newTheme) {
+    lightTheme = newTheme;
     darkTheme = newTheme;
     update();
   }
