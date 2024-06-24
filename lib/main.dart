@@ -21,6 +21,7 @@ import 'package:toastification/toastification.dart';
 import 'package:window_manager/window_manager.dart';
 
 // TODO disable drag window by pinching the app bar buttons
+// TODO trim sync code
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
