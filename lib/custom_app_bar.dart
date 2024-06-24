@@ -115,6 +115,29 @@ class SettingsMenuButton extends StatelessWidget {
             leading: const Icon(Icons.upload),
             title: const Text("Export your data"),
           ),
+          ListTile(
+            onTap: () async {
+              Get.dialog(AlertDialog(
+                title: const Text("Clear all your data"),
+                content: const Text("Do you want to clear all your data ?"),
+                actions: [
+                  TextButton(
+                    onPressed: Get.back,
+                    child: const Text("No"),
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      Repository.to.clearApp();
+                      Get.back();
+                    },
+                    child: const Text("Yes"),
+                  ),
+                ],
+              ));
+            },
+            leading: const Icon(Icons.clear_all),
+            title: const Text("Clear all your data"),
+          ),
         ],
       );
     });

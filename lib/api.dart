@@ -23,6 +23,7 @@ class Api extends GetConnect {
     }
 
     final file = File(music.thumbnailPath);
+    await file.parent.create(recursive: true);
     await file.writeAsBytes(response.bodyBytes);
   }
 
@@ -40,7 +41,7 @@ class Api extends GetConnect {
     var stream = yt.videos.streamsClient.get(streamInfo);
 
     // Open a file for writing.
-    final musicDir = await music.getMusicDir();
+    final musicDir = music.musicDir;
     final videoData = await yt.videos.get(music.youtubeVideoId);
     final musicTitle = videoData.title
         .replaceAll("/", "")

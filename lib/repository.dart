@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:riffle/functions.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/my_audio_handler.dart';
 import 'package:riffle/sync_popup/sync_popup_view.dart';
@@ -27,11 +26,11 @@ class Repository extends GetxController {
   PlayerState? playerStateOnSeekStart;
   Duration playerCurrentPosition = Duration.zero;
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? syncSubscription;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? syncSubscription;
 
   double get playerSeekerPosition {
     double position = playerCurrentPosition.inMilliseconds /
-        selectedMusic!.duration.inMilliseconds;
+        selectedMusic!.duration!.inMilliseconds;
     if (position > 1) return 1;
     if (position < 0) return 0;
     return position;
@@ -41,13 +40,15 @@ class Repository extends GetxController {
   set syncCode(String? value) {
     if (value == "") value = null;
     box.write("syncCode", value);
-    isSyncEnabled = true;
+
+    if (value == null) isSyncEnabled = false;
   }
 
   bool get isSyncEnabled {
     if (syncCode == null) return false;
     return box.read("isSyncEnabled") ?? false;
   }
+
   set isSyncEnabled(bool isSyncEnabled) {
     if (isSyncEnabled) {
       listenToMusics();
@@ -59,13 +60,10 @@ class Repository extends GetxController {
     update();
   }
 
-  Repository() {
-    box.write("music", []);
-    List<dynamic> savedMusicList = box.read("music") ?? [];
-    for (var savedMusic in savedMusicList) {
-      musicList.add(Music.fromJson(savedMusic));
-    }
+  DocumentReference<Map<String, dynamic>> get syncCodeDocRef =>
+      FirebaseFirestore.instance.collection("users").doc(syncCode);
 
+  Repository() {
     player.onPlayerStateChanged.listen((PlayerState event) {
       if (event == PlayerState.completed) {
         if (repeatMode == RepeatMode.repeatOne) {
@@ -83,8 +81,6 @@ class Repository extends GetxController {
       playerCurrentPosition = newPosition;
       update();
     });
-
-    if (isSyncEnabled) listenToMusics();
   }
 
   @override
@@ -93,46 +89,66 @@ class Repository extends GetxController {
     super.update(ids, condition);
   }
 
+  void loadMusicList() {
+    List<dynamic> savedMusicList = jsonDecode(box.read("music") ?? "[]");
+    musicList = [];
+    for (Map<String, dynamic> savedMusic in savedMusicList) {
+      musicList.add(Music.fromJson(savedMusic));
+    }
+    update();
+
+    if (isSyncEnabled) listenToMusics();
+  }
+
   void listenToMusics() {
     syncSubscription?.cancel();
-    syncSubscription = FirebaseFirestore.instance
-        .collection("users")
-        .doc(syncCode)
-        .collection("musics")
-        .snapshots()
-        .listen(
-          (event) {},
-        );
+    syncSubscription = syncCodeDocRef.snapshots().listen(
+      (event) {
+        final docData = event.data();
+        if (docData == null) return;
+
+        if (jsonEncode(docData["musicList"]) == jsonEncode(musicList)) return;
+
+        musicList = [];
+        for (Map<String, dynamic> savedMusic in docData["musicList"]) {
+          musicList.add(Music.fromJson(savedMusic));
+        }
+        update();
+        saveMusicOnDevice();
+      },
+    );
   }
 
-  void saveMusic() {
-    box.write("music", musicList);
+  void saveMusicOnDevice() {
+    box.write("music", jsonEncode(musicList));
   }
 
-  Future<List<String>> getMusic() async {
-    final musicDir = await Functions.getMusicDir();
-    final musicList =
-        musicDir.listSync().whereType<Directory>().map((e) => e.path).toList();
-    return musicList;
+  void saveMusicOnFirestore() {
+    if (!isSyncEnabled) return;
+    syncCodeDocRef
+        .set({"musicList": musicList.map((e) => e.toJson()).toList()});
   }
 
   void addNewMusic(Music newMusic) async {
     musicList.add(newMusic);
     update();
-    saveMusic();
+    saveMusicOnDevice();
+    saveMusicOnFirestore();
   }
 
   void select(Music music) async {
-    ThemeController.to.changeTheme(music.themeData);
+    if (music.themeData != null) {
+      ThemeController.to.changeTheme(music.themeData!);
+    }
 
     selectedMusic = music;
 
     if (GetPlatform.isMobile) {
-      MyAudioHandler.to.mediaItem.add(await selectedMusic!.getMediaItem());
+      MyAudioHandler.to.mediaItem.add(selectedMusic!.mediaItem);
     }
 
     if (player.source != null) await player.seek(Duration.zero);
-    player.play(DeviceFileSource(await selectedMusic!.getAudioPath()));
+    player.play(DeviceFileSource(selectedMusic!.audioPath!));
 
     update();
   }
@@ -146,7 +162,7 @@ class Repository extends GetxController {
   }
 
   replay() async {
-    player.play(DeviceFileSource(await selectedMusic!.getAudioPath()));
+    player.play(DeviceFileSource(selectedMusic!.audioPath!));
   }
 
   void onLoopButtonPressed() async {
@@ -178,10 +194,10 @@ class Repository extends GetxController {
 
   void seek(double value) async {
     if (player.source == null) {
-      await player.setSourceDeviceFile(await selectedMusic!.getAudioPath());
+      await player.setSourceDeviceFile(selectedMusic!.audioPath!);
     }
 
-    int position = (value * selectedMusic!.duration.inMilliseconds).toInt();
+    int position = (value * selectedMusic!.duration!.inMilliseconds).toInt();
     player.seek(Duration(milliseconds: position));
   }
 
@@ -199,7 +215,8 @@ class Repository extends GetxController {
     final Music item = musicList.removeAt(oldIndex);
     musicList.insert(newIndex, item);
     update();
-    saveMusic();
+    saveMusicOnDevice();
+    saveMusicOnFirestore();
   }
 
   void playPause() {
@@ -221,5 +238,13 @@ class Repository extends GetxController {
     }
 
     isSyncEnabled = value;
+  }
+
+  void clearApp() {
+    syncCode = null;
+    for (Music element in musicList) {
+      element.delete();
+    }
+    musicList = [];
   }
 }

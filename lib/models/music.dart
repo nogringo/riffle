@@ -6,176 +6,189 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riffle/api.dart';
 import 'package:path/path.dart' as path;
-import 'package:riffle/functions.dart';
+import 'package:riffle/constant.dart';
+import 'package:riffle/path_provider_service.dart';
+import 'package:riffle/repository.dart';
+import 'package:toastification/toastification.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class Music extends GetxController {
   static Music get to => Get.find();
 
   String youtubeVideoId;
-  bool loaded = false;
 
-  late bool exists;
-  late String title;
-  late Duration duration;
+  String? title;
+  Duration? duration;
+
+  ColorScheme? colorScheme;
+
   late String thumbnailPath;
-  late ThemeData themeData;
 
-  TextEditingController get titleController =>
-      TextEditingController(text: title);
-
-  Music({required this.youtubeVideoId}) {
-    load();
+  ThemeData? get themeData {
+    if (colorScheme == null) return null;
+    return ThemeData.from(colorScheme: colorScheme!);
   }
 
-  void load() async {
-    thumbnailPath = await getThumbnailPath();
+  TextEditingController get titleController {
+    return TextEditingController(text: title);
+  }
 
-    themeData = await getThemeData();
+  MediaItem get mediaItem {
+    return MediaItem(
+      id: youtubeVideoId,
+      title: title ?? youtubeVideoId,
+      duration: duration,
+      artUri: Uri.file(
+        thumbnailPath,
+      ),
+    );
+  }
 
-    exists = await getExists();
+  Directory get musicDir {
+    return Directory(path.join(
+      PathProviderService().documentsPath,
+      appName,
+      "Music",
+      youtubeVideoId,
+    ));
+  }
 
-    if (!exists) {
-      await download();
+  bool get thumbnailExists => File(thumbnailPath).existsSync();
+  bool get audioExists => musicDir
+      .listSync()
+      .where((entitie) => entitie.path.endsWith(".mp3"))
+      .isNotEmpty;
+
+  String? get audioPath {
+    try {
+      return musicDir
+          .listSync()
+          .where((entitie) => entitie.path.endsWith(".mp3"))
+          .first
+          .path;
+    } catch (e) {
+      return null;
     }
+  }
 
-    title = await getTitle();
-    duration = await getDuration();
+  Music({required this.youtubeVideoId, this.title, this.duration}) {
+    thumbnailPath = path.join(
+      musicDir.path,
+      "thumbnail.jpg",
+    );
 
-    loaded = true;
+    if (thumbnailExists) {
+      computeThumbnailColorScheme();
+    } else {
+      asyncConstructor();
+    }
+  }
+
+  void asyncConstructor() async {
+    try {
+      await download();
+    } catch (e) {
+      //
+    }
+  }
+
+  Future<void> download() async {
+    try {
+      await downloadMetaData();
+      await downloadAudio();
+    } catch (e) {
+      toastification.show(
+        type: ToastificationType.error,
+        style: ToastificationStyle.flat,
+        title: const Text("Download error"),
+        description: const Text("Check your internet connectivity"),
+        alignment: Alignment.bottomLeft,
+        borderRadius: BorderRadius.circular(12.0),
+        applyBlurEffect: true,
+        showProgressBar: false,
+        closeOnClick: true,
+        icon: const Icon(Icons.wifi_off)
+      );
+    }
+  }
+
+  Future<void> downloadMetaData() async {
+    final yt = YoutubeExplode();
+    final videoData = await yt.videos.get(youtubeVideoId);
+    title = videoData.title;
+    duration = videoData.duration;
+    yt.close();
+
+    await Api().downloadThumbnail(this);
+    computeThumbnailColorScheme();
+
+    update();
+    Repository.to.saveMusicOnDevice();
+    Repository.to.saveMusicOnFirestore();
+  }
+
+  Future<void> downloadAudio() async {
+    await Api().downloadAudio(this);
     update();
   }
 
-  Future<ThemeData> getThemeData() async {
-    final thumbnailFile = File(thumbnailPath);
+  void computeThumbnailColorScheme() async {
+    if (!thumbnailExists) return;
 
-    if (!thumbnailFile.existsSync()) {
-      await Api().downloadThumbnail(this);
-    }
-
-    return ThemeData.from(
-      colorScheme: await ColorScheme.fromImageProvider(
-        provider: FileImage(thumbnailFile),
-        brightness: Brightness.dark, // TODO dynamic brightness
-      ),
+    colorScheme = await ColorScheme.fromImageProvider(
+      provider: FileImage(File(thumbnailPath)),
+      brightness: Get.theme.brightness,
     );
-  }
-
-  Future<String> getAudioPath() async {
-    final musicDir = await getMusicDir();
-    final audioFiles =
-        musicDir.listSync().where((entitie) => entitie.path.endsWith(".mp3"));
-
-    if (audioFiles.isEmpty) {
-      await Api().downloadAudio(this);
-    }
-
-    final audioPath = musicDir
-        .listSync()
-        .where((entitie) => entitie.path.endsWith(".mp3"))
-        .first
-        .path;
-
-    return audioPath;
+    update();
   }
 
   Future<String> getTitle() async {
-    final audioPath = await getAudioPath();
-    return path.basenameWithoutExtension(audioPath);
+    if (title != null) return title!;
+    var yt = YoutubeExplode();
+    final videoData = await yt.videos.get(youtubeVideoId);
+    title = videoData.title;
+    yt.close();
+    update();
+    return title!;
   }
 
   Future<Duration> getDuration() async {
-    final audioPath = await getAudioPath();
-
-    final player = AudioPlayer();
-    await player.setSourceDeviceFile(audioPath);
-    final duration = await player.getDuration();
-    player.dispose();
+    if (duration != null) return duration!;
+    if (audioPath != null) {
+      final player = AudioPlayer();
+      await player.setSourceDeviceFile(audioPath!);
+      final duration = await player.getDuration();
+      player.dispose();
+      update();
+      return duration!;
+    }
+    var yt = YoutubeExplode();
+    final videoData = await yt.videos.get(youtubeVideoId);
+    duration = videoData.duration;
+    yt.close();
+    update();
     return duration!;
   }
 
-  Future<Directory> getMusicDir() async {
-    final musicDir = await Functions.getMusicDir();
-    final downloadDir = Directory(path.join(
-      musicDir.path,
-      youtubeVideoId,
-    ));
-    if (!(await downloadDir.exists())) {
-      await downloadDir.create(recursive: true);
-    }
-
-    return downloadDir;
-  }
-
-  Future<String> getThumbnailPath() async {
-    final musicDir = await getMusicDir();
-    return path.join(musicDir.path, "thumbnail.jpg");
-  }
-
-  Future<MediaItem> getMediaItem() async {
-    return MediaItem(
-      id: youtubeVideoId,
-      title: title,
-      duration: duration,
-      artUri: Uri.file(
-        await getThumbnailPath(),
-      ),
-    );
-  }
-
-  Future<bool> getAudioExists() async {
-    final musicDir = await getMusicDir();
-    return musicDir
-        .listSync()
-        .where((entitie) => entitie.path.endsWith(".mp3"))
-        .isNotEmpty;
-  }
-
-  Future<bool> getThumbnailExists() async {
-    final musicDir = await getMusicDir();
-    return musicDir
-        .listSync()
-        .where((file) => path.basename(file.path) == "thumbnail.jpg")
-        .isNotEmpty;
-  }
-
-  Future<bool> getExists() async {
-    return await getAudioExists() && await getThumbnailExists();
-  }
-
   Map<String, dynamic> toJson() {
-    return {
+    Map<String, dynamic> result = {
       'youtubeVideoId': youtubeVideoId,
     };
+
+    if (title != null) result["title"] = title!;
+    if (duration != null) result["duration"] = duration!.inMilliseconds;
+
+    return result;
   }
 
   factory Music.fromJson(Map<String, dynamic> json) {
     return Music(
       youtubeVideoId: json['youtubeVideoId'],
+      title: json["title"],
+      duration: json["duration"] != null
+          ? Duration(milliseconds: json["duration"])
+          : null,
     );
-  }
-
-  Future<void> downloadAudio() async {
-    await Api().downloadAudio(this);
-    exists = await getExists();
-    title = await getTitle();
-    duration = await getDuration();
-    update();
-  }
-
-  Future<void> downloadThumbnail() async {
-    await Api().downloadAudio(this);
-    exists = await getExists();
-    title = await getTitle();
-    duration = await getDuration();
-    update();
-  }
-
-  Future<void> download() async {
-    await Api().downloadAudio(this);
-    exists = await getExists();
-    title = await getTitle();
-    duration = await getDuration();
-    update();
   }
 
   Future<void> rename(String newName) async {
@@ -188,7 +201,10 @@ class Music extends GetxController {
   }
 
   Future<void> delete() async {
-    final musicDir = await getMusicDir();
-    await musicDir.delete(recursive: true);
+    try {
+      await musicDir.delete(recursive: true);
+    } catch (e) {
+      //
+    }
   }
 }

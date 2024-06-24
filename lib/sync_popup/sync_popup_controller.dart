@@ -40,6 +40,7 @@ class SyncPopupController extends GetxController {
     if (syncCodeError != 0) return update();
 
     Repository.to.syncCode = syncCode;
+    Repository.to.isSyncEnabled = true;
     Get.back();
   }
 

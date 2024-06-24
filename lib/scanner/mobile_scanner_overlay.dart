@@ -22,6 +22,7 @@ class _BarcodeScannerWithOverlayState extends State<BarcodeScannerWithOverlay> {
     controller.barcodes.listen(
       (event) {
         Repository.to.syncCode = event.barcodes.first.displayValue!;
+        Repository.to.isSyncEnabled = true;
         Get.back();
       },
     );

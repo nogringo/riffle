@@ -10,8 +10,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:riffle/constant.dart';
 import 'package:riffle/firebase_options.dart';
-import 'package:riffle/home/home_page.dart';
+import 'package:riffle/home/home_page_view.dart';
 import 'package:riffle/my_audio_handler.dart';
+import 'package:riffle/path_provider_service.dart';
 import 'package:riffle/repository.dart';
 import 'package:riffle/theme_controller.dart';
 import 'package:super_hot_key/super_hot_key.dart';
@@ -21,6 +22,8 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await PathProviderService().init();
 
   SystemTheme.fallbackColor = logoPrimaryColor;
   await SystemTheme.accentColor.load();
@@ -116,7 +119,7 @@ class MyApp extends StatelessWidget {
             theme: c.lightTheme,
             darkTheme: c.darkTheme,
             themeMode: ThemeMode.dark,
-            home: const HomePage(),
+            home: const HomePageView(),
           );
         },
       ),

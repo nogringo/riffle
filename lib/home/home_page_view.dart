@@ -9,8 +9,8 @@ import 'package:riffle/home/menu.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/repository.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePageView extends StatelessWidget {
+  const HomePageView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,18 +74,41 @@ class HomePage extends StatelessWidget {
 }
 
 Widget musicViewBuilder(context, index) {
-  final music = Repository.to.musicList[index];
   return GetBuilder<Music>(
     key: Key("$index"),
-    init: music,
+    init: Repository.to.musicList[index],
     global: false,
-    builder: (musicController) {
-      if (!musicController.loaded || !musicController.exists) {
+    builder: (c) {
+      if (c.title == null) {
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          child: ListTile(
+            onTap: c.download,
+            title: Text(c.youtubeVideoId),
+            trailing: const Icon(Icons.download),
+          ),
+        );
+      }
+
+      if (c.colorScheme == null) {
         return Container();
       }
 
+      final theme = c.themeData ?? Get.theme;
+
+      Widget? subtitle;
+      if (c.duration != null) {
+        subtitle = Text(
+          "${c.duration!.inMinutes}:${(c.duration!.inSeconds % 60).toString().padLeft(2, "0")}",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onPrimaryContainer,
+          ),
+        );
+      }
+
       return Theme(
-        data: music.themeData,
+        data: theme,
         child: Card(
           clipBehavior: Clip.antiAlias,
           child: ReorderableDragStartListener(
@@ -93,54 +116,49 @@ Widget musicViewBuilder(context, index) {
             enabled: GetPlatform.isDesktop,
             child: Stack(
               children: [
-                Positioned.fill(
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return Transform.translate(
-                      offset: Offset(constraints.maxWidth / 4, 0),
-                      child: Image.file(
-                        File(music.thumbnailPath),
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  }),
-                ),
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          music.themeData.colorScheme.primaryContainer,
-                          music.themeData.colorScheme.primaryContainer
-                              .withAlpha(150),
-                          Colors.transparent,
-                        ],
-                        begin: const Alignment(-0.3, 0),
+                if (c.thumbnailExists)
+                  Positioned.fill(
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      return Transform.translate(
+                        offset: Offset(constraints.maxWidth / 4, 0),
+                        child: Image.file(
+                          File(c.thumbnailPath),
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }),
+                  ),
+                if (c.thumbnailExists)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colorScheme.primaryContainer,
+                            theme.colorScheme.primaryContainer.withAlpha(150),
+                            Colors.transparent,
+                          ],
+                          begin: const Alignment(-0.3, 0),
+                        ),
                       ),
                     ),
                   ),
-                ),
                 ListTile(
                   onTap: () {
-                    Repository.to.select(music);
+                    Repository.to.select(c);
                   },
                   title: Text(
-                    music.title,
+                    c.title ?? c.youtubeVideoId,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: music.themeData.colorScheme.onPrimaryContainer,
+                      color: theme.colorScheme.onPrimaryContainer,
                     ),
                   ),
-                  subtitle: Text(
-                    "${music.duration.inMinutes}:${(musicController.duration.inSeconds % 60).toString().padLeft(2, "0")}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: music.themeData.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
+                  subtitle: subtitle,
                   trailing: PopupMenuButton(
-                    iconColor: music.themeData.colorScheme.onPrimaryContainer,
+                    iconColor: theme.colorScheme.onPrimaryContainer,
                     onSelected: (value) {
-                      return HomePageController.to.menuAction(value, music);
+                      return HomePageController.to.menuAction(value, c);
                     },
                     itemBuilder: (BuildContext context) {
                       return [
@@ -193,14 +211,15 @@ class AudioPlayerController extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(
-          child: GetBuilder<Repository>(builder: (_) {
-            return Image.file(
-              File(Repository.to.selectedMusic!.thumbnailPath),
-              fit: BoxFit.cover,
-            );
-          }),
-        ),
+        if (Repository.to.selectedMusic!.thumbnailExists)
+          Positioned.fill(
+            child: GetBuilder<Repository>(builder: (_) {
+              return Image.file(
+                File(Repository.to.selectedMusic!.thumbnailPath),
+                fit: BoxFit.cover,
+              );
+            }),
+          ),
         Positioned.fill(
           child: Opacity(
             opacity: 0.6,

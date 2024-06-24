@@ -99,7 +99,8 @@ class AddMusicPopupController extends GetxController {
       Repository.to.musicList = exportedMusicList;
     }
 
-    Repository.to.saveMusic();
+    Repository.to.saveMusicOnDevice();
+    Repository.to.saveMusicOnFirestore();
     Repository.to.update();
 
     Get.back();

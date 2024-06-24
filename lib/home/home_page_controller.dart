@@ -15,6 +15,10 @@ import 'menu.dart';
 class HomePageController extends GetxController {
   static HomePageController get to => Get.find();
 
+  HomePageController() {
+    Repository.to.loadMusicList();
+  }
+
   void menuAction(Menu menuOption, Music music) async {
     switch (menuOption) {
       case Menu.edit:
@@ -71,10 +75,11 @@ class HomePageController extends GetxController {
   }
 
   void deleteMusic(Music music) {
-    music.delete();
     Repository.to.musicList.remove(music);
     Repository.to.update();
-    Repository.to.saveMusic();
+    music.delete();
+    Repository.to.saveMusicOnDevice();
+    Repository.to.saveMusicOnFirestore();
   }
 
   void openAddMusicPopup() {
