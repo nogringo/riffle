@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riffle/repository.dart';
+import 'package:riffle/scanner/mobile_scanner_overlay.dart';
 import 'package:uuid/uuid.dart';
 
 enum SyncPopupMenu { generateSyncCode, scanQrCode }
@@ -50,7 +51,7 @@ class SyncPopupController extends GetxController {
         generateNewSyncCode();
         break;
       case SyncPopupMenu.scanQrCode:
-        generateNewSyncCode();
+        Get.to(const BarcodeScannerWithOverlay());
     }
   }
 }
