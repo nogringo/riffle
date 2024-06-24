@@ -33,9 +33,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  if (kDebugMode) {
-    FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  }
+  // if (kDebugMode) {
+  //   FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+  // }
 
   await GetStorage.init();
 

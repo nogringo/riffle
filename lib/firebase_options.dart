@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -43,9 +40,19 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAJOVjgA5t0wVDxiwFl7zl6wEeo2UflK98',
+    appId: '1:1057023595366:web:93c889cd38ce085660eea7',
+    messagingSenderId: '1057023595366',
+    projectId: 'riffle-dc901',
+    authDomain: 'riffle-dc901.firebaseapp.com',
+    storageBucket: 'riffle-dc901.appspot.com',
+    measurementId: 'G-MHZXS08SPR',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBQPKKZFc17fzlYTlpp06vluEQ00wdrjjU',
-    appId: '1:1057023595366:android:6a8e0936876df42160eea7',
+    appId: '1:1057023595366:android:7f742eb19150598960eea7',
     messagingSenderId: '1057023595366',
     projectId: 'riffle-dc901',
     storageBucket: 'riffle-dc901.appspot.com',
@@ -53,7 +60,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD5FdojFFyEfGSk7uSouxl5AaULzaLcLsA',
-    appId: '1:1057023595366:ios:d76b8ea262aa121860eea7',
+    appId: '1:1057023595366:ios:e08d8218c67e0c9860eea7',
     messagingSenderId: '1057023595366',
     projectId: 'riffle-dc901',
     storageBucket: 'riffle-dc901.appspot.com',
@@ -62,7 +69,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyD5FdojFFyEfGSk7uSouxl5AaULzaLcLsA',
-    appId: '1:1057023595366:ios:d76b8ea262aa121860eea7',
+    appId: '1:1057023595366:ios:e08d8218c67e0c9860eea7',
     messagingSenderId: '1057023595366',
     projectId: 'riffle-dc901',
     storageBucket: 'riffle-dc901.appspot.com',
@@ -71,11 +78,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyAJOVjgA5t0wVDxiwFl7zl6wEeo2UflK98',
-    appId: '1:1057023595366:web:a12888e7d9edc80660eea7',
+    appId: '1:1057023595366:web:c18bb4670360483660eea7',
     messagingSenderId: '1057023595366',
     projectId: 'riffle-dc901',
     authDomain: 'riffle-dc901.firebaseapp.com',
     storageBucket: 'riffle-dc901.appspot.com',
-    measurementId: 'G-Z3LQ6TNFJH',
+    measurementId: 'G-G0TD3TRZNZ',
   );
 }

@@ -64,6 +64,7 @@ class Repository extends GetxController {
       FirebaseFirestore.instance.collection("users").doc(syncCode);
 
   Repository() {
+    box.write("music", null);
     player.onPlayerStateChanged.listen((PlayerState event) {
       if (event == PlayerState.completed) {
         if (repeatMode == RepeatMode.repeatOne) {
