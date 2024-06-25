@@ -22,6 +22,7 @@ import 'package:window_manager/window_manager.dart';
 
 // TODO disable drag window by pinching the app bar buttons
 // TODO trim sync code
+// TODO indicate if the music exist or not on the ui
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
