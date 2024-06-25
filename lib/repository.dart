@@ -38,6 +38,7 @@ class Repository extends GetxController {
 
   String? get syncCode => box.read("syncCode");
   set syncCode(String? value) {
+    if (value != null) value = value.trim();
     if (value == "") value = null;
     box.write("syncCode", value);
 

@@ -17,9 +17,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) {
-        if (GetPlatform.isDesktop) windowManager.startDragging();
-      },
+      onTapDown: GetPlatform.isDesktop
+          ? (_) {
+              windowManager.startDragging();
+            }
+          : null,
+      behavior: HitTestBehavior.opaque,
       child: AppBar(
         title: const Text("Riffle"),
         actions: [
