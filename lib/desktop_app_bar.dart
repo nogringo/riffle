@@ -4,35 +4,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:riffle/constant.dart';
+import 'package:riffle/desktop_windows_buttons.dart';
 import 'package:riffle/repository.dart';
 import 'package:riffle/scanner/mobile_scanner_overlay.dart';
 import 'package:riffle/theme_controller.dart';
 import 'package:toastification/toastification.dart';
+import 'package:window_manager/window_manager.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const DesktopAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: const Text("My music"),
-      actions: [
-        GetBuilder<Repository>(
-          builder: (c) {
-            return Switch(
-              value: c.isSyncEnabled,
-              onChanged: c.onSyncSwitchToggle,
-              thumbIcon: const WidgetStatePropertyAll(Icon(Icons.sync)),
-            );
-          },
+    return Column(
+      children: [
+        AppBar(
+          actions: [
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTapDown: (_) => windowManager.startDragging(),
+                    ),
+                  ),
+                  const DesktopWindowButtons(),
+                ],
+              ),
+            )
+          ],
+          toolbarHeight: kToolbarHeight * 0.5,
         ),
-        const SettingsMenuButton(),
+        AppBar(
+          title: const Text(appName),
+          actions: [
+            GetBuilder<Repository>(
+              builder: (c) {
+                return Switch(
+                  value: c.isSyncEnabled,
+                  onChanged: c.onSyncSwitchToggle,
+                  thumbIcon: const WidgetStatePropertyAll(Icon(Icons.sync)),
+                );
+              },
+            ),
+            const SettingsMenuButton(),
+          ],
+        ),
       ],
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight * 1.5);
 }
 
 class SettingsMenuButton extends StatelessWidget {

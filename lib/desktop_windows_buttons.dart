@@ -32,6 +32,7 @@ class _DesktopWindowButtonsState extends State<DesktopWindowButtons>
           icon: Icon(
             Icons.minimize,
             color: iconsColor,
+            size: kToolbarHeight * 0.3,
           ),
         ),
         FutureBuilder(
@@ -44,6 +45,7 @@ class _DesktopWindowButtonsState extends State<DesktopWindowButtons>
                 icon: FaIcon(
                   FontAwesomeIcons.windowRestore,
                   color: iconsColor,
+                  size: kToolbarHeight * 0.2,
                 ),
               );
             }
@@ -53,6 +55,7 @@ class _DesktopWindowButtonsState extends State<DesktopWindowButtons>
               icon: FaIcon(
                 FontAwesomeIcons.windowMaximize,
                 color: iconsColor,
+                size: kToolbarHeight * 0.2,
               ),
             );
           },
@@ -63,6 +66,7 @@ class _DesktopWindowButtonsState extends State<DesktopWindowButtons>
           icon: Icon(
             Icons.close,
             color: iconsColor,
+            size: kToolbarHeight * 0.3,
           ),
         ),
       ],

@@ -48,8 +48,6 @@ void main() async {
     await windowManager.ensureInitialized();
 
     WindowOptions windowOptions = const WindowOptions(
-      titleBarStyle: TitleBarStyle.hidden,
-      backgroundColor: Colors.transparent,
       title: "Riffle",
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
