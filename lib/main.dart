@@ -22,6 +22,7 @@ import 'package:window_manager/window_manager.dart';
 // TODO indicate if the music exist or not on the ui
 // TODO if Get.width < 500 show qr code in dialog
 // TODO remove lag when seeking
+// TODO manage app updates
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
