@@ -85,4 +85,10 @@ class HomePageController extends GetxController {
   void openAddMusicPopup() {
     Get.dialog(const AddMusicPopupView());
   }
+
+  void seek(double value) {
+    int position =
+        (value * Repository.to.selectedMusic!.duration!.inMilliseconds).toInt();
+    Repository.to.seek(Duration(milliseconds: position));
+  }
 }

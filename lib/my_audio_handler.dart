@@ -29,34 +29,52 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   @override
   Future<void> seek(Duration position) {
-    player.seek(position);
+    Repository.to.seek(position);
     return super.seek(position);
   }
 
+  //!
   @override
   Future<void> fastForward() async {
     Repository.to.onLoopButtonPressed();
   }
 
   @override
-  Future<void> skipToNext() {
-    Repository.to.skipToNext();
-    return super.skipToNext();
+  Future<void> skipToPrevious() {
+    Repository.to.skipToPreviousTrack();
+    return super.skipToPrevious();
   }
 
   @override
-  Future<void> skipToPrevious() {
-    Repository.to.skipToNext();
-    return super.skipToPrevious();
+  Future<void> skipToNext() {
+    Repository.to.skipToNextTrack();
+    return super.skipToNext();
+  }
+
+  //!
+  @override
+  Future<void> rewind() async {
+    Repository.to.replay();
   }
 
   void update() {
     bool isPlaying = player.state == PlayerState.playing;
 
+    MediaControl secondBtn = MediaControl.pause;
+    if (player.state == PlayerState.paused) {
+      secondBtn = MediaControl.play;
+    } else if (player.state == PlayerState.completed) {
+      secondBtn = const MediaControl(
+        androidIcon: "drawable/ic_stat_replay",
+        label: "Replay button",
+        action: MediaAction.rewind,
+      );
+    }
+
     playbackState.add(PlaybackState(
       controls: [
         MediaControl.skipToPrevious,
-        isPlaying ? MediaControl.pause : MediaControl.play,
+        secondBtn,
         MediaControl.skipToNext,
         MediaControl(
           androidIcon: {

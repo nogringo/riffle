@@ -163,7 +163,7 @@ class Repository extends GetxController {
     player.pause();
   }
 
-  replay() async {
+  void replay() async {
     player.play(DeviceFileSource(selectedMusic!.audioPath!));
   }
 
@@ -194,13 +194,16 @@ class Repository extends GetxController {
     pause();
   }
 
-  void seek(double value) async {
+  void seek(Duration position) async {
     if (player.source == null) {
       await player.setSourceDeviceFile(selectedMusic!.audioPath!);
     }
 
-    int position = (value * selectedMusic!.duration!.inMilliseconds).toInt();
-    player.seek(Duration(milliseconds: position));
+    player.seek(position);
+
+    if (player.state == PlayerState.completed) {
+      resume();
+    }
   }
 
   void onSeekEnd(double value) {
@@ -230,9 +233,9 @@ class Repository extends GetxController {
     resume();
   }
 
-  void nextTrack() {}
+  void skipToPreviousTrack() {}
 
-  void skipToNext() {}
+  void skipToNextTrack() {}
 
   void onSyncSwitchToggle(bool value) async {
     if (value) {

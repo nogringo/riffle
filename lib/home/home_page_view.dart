@@ -306,7 +306,7 @@ class AudioPlayerController extends StatelessWidget {
                 return Slider(
                   value: Repository.to.playerSeekerPosition,
                   onChangeStart: Repository.to.onSeekStart,
-                  onChanged: Repository.to.seek,
+                  onChanged: HomePageController.to.seek,
                   onChangeEnd: Repository.to.onSeekEnd,
                 );
               },

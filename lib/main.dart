@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:audio_service/audio_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +17,11 @@ import 'package:system_theme/system_theme.dart';
 import 'package:toastification/toastification.dart';
 import 'package:window_manager/window_manager.dart';
 
+// ! App volume is not saved between app restart
 // TODO disable drag window by pinching the app bar buttons
 // TODO indicate if the music exist or not on the ui
 // TODO if Get.width < 500 show qr code in dialog
+// TODO remove lag when seeking
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,16 +36,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // if (kDebugMode) {
-  //   FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
-  // }
 
   await GetStorage.init();
 
   Get.put(ThemeController());
   Get.put(Repository());
 
-  if (Platform.isWindows || Platform.isMacOS) addHotKeys();
+  addHotKeys();
 
   if (GetPlatform.isDesktop) {
     await windowManager.ensureInitialized();
@@ -88,14 +84,14 @@ Future<void> addHotKeys() async {
     definition: HotKeyDefinition(
       key: PhysicalKeyboardKey.mediaTrackNext,
     ),
-    onPressed: Repository.to.nextTrack,
+    onPressed: Repository.to.skipToNextTrack,
   );
 
   await HotKey.create(
     definition: HotKeyDefinition(
       key: PhysicalKeyboardKey.mediaTrackPrevious,
     ),
-    onPressed: Repository.to.skipToNext,
+    onPressed: Repository.to.skipToPreviousTrack,
   );
 }
 
