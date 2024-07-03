@@ -1,0 +1,158 @@
+{
+  "videoLink": "Video link",
+  "@helloWorld": {
+    "description": ""
+  },
+  "orImportYourData": "Or import you data",
+  "@orImportYourData": {
+    "description": ""
+  },
+  "addAMusic": "Add a music",
+  "@addAMusic": {
+    "description": ""
+  },
+  "enterAYoutubeVideoLinkToAddANewMusic": "Enter a Youtube video link to add a new music",
+  "@enterAYoutubeVideoLinkToAddANewMusic": {
+    "description": ""
+  },
+  "importYourData": "Import your data",
+  "@importYourData": {
+    "description": ""
+  },
+  "pasteYourExportedDataBellow": "Paste your exported data bellow",
+  "@pasteYourExportedDataBellow": {
+    "description": ""
+  },
+  "required": "Required",
+  "@required": {
+    "description": ""
+  },
+  "invalide": "Invalide",
+  "@invalide": {
+    "description": ""
+  },
+  "exportedData": "Exported data",
+  "@exportedData": {
+    "description": ""
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": ""
+  },
+  "add": "Add",
+  "@add": {
+    "description": ""
+  },
+  "import": "Import",
+  "@import": {
+    "description": ""
+  },
+  "myMusic": "My misic",
+  "@myMusic": {
+    "description": ""
+  },
+  "copySyncCode": "Copy Sync Code",
+  "@copySyncCode": {
+    "description": ""
+  },
+  "createQRCode": "Create QR code",
+  "@createQRCode": {
+    "description": ""
+  },
+  "exportYourData": "Export your data",
+  "@exportYourData": {
+    "description": ""
+  },
+  "clearAllYourData": "Clear all your data",
+  "@clearAllYourData": {
+    "description": ""
+  },
+  "syncYourDevices": "Sync your devices",
+  "@syncYourDevices": {
+    "description": ""
+  },
+  "syncCode": "Sync code",
+  "@syncCode": {
+    "description": ""
+  },
+  "startSync": "Start sync",
+  "@startSync": {
+    "description": ""
+  },
+  "scanQRCode": "Scan QR code",
+  "@scanQRCode": {
+    "description": ""
+  },
+  "yourDataHasBeenCopied": "Your data has been copied",
+  "@yourDataHasBeenCopied": {
+    "description": ""
+  },
+  "doYouWantToClearAllYourData": "Do you want to clear all your data ?",
+  "@doYouWantToClearAllYourData": {
+    "description": ""
+  },
+  "no": "No",
+  "@no": {
+    "description": ""
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": ""
+  },
+  "heyThereIsNothingHere": "Hey, there is nothing here !",
+  "@heyThereIsNothingHere": {
+    "description": ""
+  },
+  "startByAddingYourFirstMusic": "Start by adding your first Music",
+  "@startByAddingYourFirstMusic": {
+    "description": ""
+  },
+  "generateYourSyncCode": "Generate your Sync code",
+  "@generateYourSyncCode": {
+    "description": ""
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": ""
+  },
+  "save": "Save",
+  "@save": {
+    "description": ""
+  },
+  "title": "Title",
+  "@title": {
+    "description": ""
+  },
+  "getLink": "Get link",
+  "@getLink": {
+    "description": ""
+  },
+  "openFolder": "Open folder",
+  "@openFolder": {
+    "description": ""
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": ""
+  },
+  "syncCodeCopied": "Sync code copied",
+  "@syncCodeCopied": {
+    "description": ""
+  },
+  "copied": "Copied",
+  "@copied": {
+    "description": ""
+  },
+  "cantOpenFileExplorer": "Can't open File Explorer",
+  "@cantOpenFileExplorer": {
+    "description": ""
+  },
+  "downloadError": "Download error",
+  "@downloadError": {
+    "description": ""
+  },
+  "checkYourInternetConnectivity": "Check your internet connectivity",
+  "@checkYourInternetConnectivity": {
+    "description": ""
+  }
+}

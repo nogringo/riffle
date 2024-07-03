@@ -11,6 +11,7 @@ import 'package:riffle/path_provider_service.dart';
 import 'package:riffle/repository.dart';
 import 'package:toastification/toastification.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Music extends GetxController {
   static Music get to => Get.find();
@@ -100,8 +101,8 @@ class Music extends GetxController {
       toastification.show(
         type: ToastificationType.error,
         style: ToastificationStyle.flat,
-        title: const Text("Download error"),
-        description: const Text("Check your internet connectivity"),
+        title: Text(AppLocalizations.of(Get.context!)!.downloadError),
+        description: Text(AppLocalizations.of(Get.context!)!.checkYourInternetConnectivity),
         alignment: Alignment.bottomLeft,
         borderRadius: BorderRadius.circular(12.0),
         applyBlurEffect: true,

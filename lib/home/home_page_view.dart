@@ -8,6 +8,7 @@ import 'package:riffle/home/home_page_controller.dart';
 import 'package:riffle/home/menu.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/repository.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePageView extends StatelessWidget {
   const HomePageView({super.key});
@@ -33,7 +34,7 @@ class HomePageView extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            "Hey, there is nothing here !",
+                            AppLocalizations.of(context)!.heyThereIsNothingHere,
                             textAlign: TextAlign.center,
                             style: Get.textTheme.displaySmall,
                           ),
@@ -41,7 +42,7 @@ class HomePageView extends StatelessWidget {
                           FilledButton.icon(
                             onPressed: HomePageController.to.openAddMusicPopup,
                             label:
-                                const Text("Start by adding your first Music"),
+                                Text(AppLocalizations.of(context)!.startByAddingYourFirstMusic),
                             icon: const Icon(Icons.add),
                           ),
                         ],
@@ -162,33 +163,33 @@ Widget musicViewBuilder(context, index) {
                     },
                     itemBuilder: (BuildContext context) {
                       return [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: Menu.edit,
                           child: ListTile(
-                            leading: Icon(Icons.edit),
-                            title: Text("Edit"),
+                            leading: const Icon(Icons.edit),
+                            title: Text(AppLocalizations.of(context)!.edit),
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: Menu.copyLink,
                           child: ListTile(
-                            leading: Icon(Icons.link),
-                            title: Text("Get link"),
+                            leading: const Icon(Icons.link),
+                            title: Text(AppLocalizations.of(context)!.getLink),
                           ),
                         ),
                         if (GetPlatform.isDesktop)
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: Menu.openFolder,
                             child: ListTile(
-                              leading: Icon(Icons.folder),
-                              title: Text("Open folder"),
+                              leading: const Icon(Icons.folder),
+                              title: Text(AppLocalizations.of(context)!.openFolder),
                             ),
                           ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: Menu.delete,
                           child: ListTile(
-                            leading: Icon(Icons.delete),
-                            title: Text("Delete"),
+                            leading: const Icon(Icons.delete),
+                            title: Text(AppLocalizations.of(context)!.delete),
                           ),
                         ),
                       ];

@@ -5,12 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:riffle/add_music_popup/add_music_popup_view.dart';
 import 'package:riffle/edit_popup_view.dart';
+import 'package:riffle/home/menu.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/repository.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'menu.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePageController extends GetxController {
   static HomePageController get to => Get.find();
@@ -53,7 +53,7 @@ class HomePageController extends GetxController {
     await Clipboard.setData(ClipboardData(text: mediaLink));
     toastification.show(
       style: ToastificationStyle.simple,
-      title: const Text("Copied"),
+      title: Text(AppLocalizations.of(Get.context!)!.copied),
       alignment: Alignment.bottomCenter,
       autoCloseDuration: const Duration(seconds: 4),
       applyBlurEffect: true,
@@ -66,7 +66,7 @@ class HomePageController extends GetxController {
     } catch (e) {
       toastification.show(
         style: ToastificationStyle.simple,
-        title: const Text("Can't open File Explorer"),
+        title: Text(AppLocalizations.of(Get.context!)!.cantOpenFileExplorer),
         alignment: Alignment.bottomCenter,
         autoCloseDuration: const Duration(seconds: 4),
         applyBlurEffect: true,

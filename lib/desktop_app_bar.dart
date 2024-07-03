@@ -11,6 +11,7 @@ import 'package:riffle/scanner/mobile_scanner_overlay.dart';
 import 'package:riffle/theme_controller.dart';
 import 'package:toastification/toastification.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
   const DesktopAppBar({super.key});
@@ -91,14 +92,14 @@ class SettingsMenuButton extends StatelessWidget {
                 );
                 toastification.show(
                   style: ToastificationStyle.simple,
-                  title: const Text("Sync code copied"),
+                  title: Text(AppLocalizations.of(Get.context!)!.syncCodeCopied),
                   alignment: Alignment.bottomCenter,
                   autoCloseDuration: const Duration(seconds: 4),
                   applyBlurEffect: true,
                 );
               },
               leading: const Icon(Icons.copy),
-              title: const Text("Copy Sync code"),
+              title: Text(AppLocalizations.of(context)!.copySyncCode),
             ),
           if (c.syncCode != null)
             ListTile(
@@ -106,7 +107,7 @@ class SettingsMenuButton extends StatelessWidget {
                 Get.dialog(const QrCodePopupView());
               },
               leading: const Icon(Icons.qr_code),
-              title: const Text("Create QR code"),
+              title: Text(AppLocalizations.of(context)!.createQRCode),
             ),
           if (GetPlatform.isMobile)
             ListTile(
@@ -114,7 +115,7 @@ class SettingsMenuButton extends StatelessWidget {
                 Get.to(const BarcodeScannerWithOverlay());
               },
               leading: const Icon(Icons.qr_code_scanner),
-              title: const Text("Scan QR code"),
+              title: Text(AppLocalizations.of(context)!.scanQRCode),
             ),
           ListTile(
             onTap: () async {
@@ -123,37 +124,37 @@ class SettingsMenuButton extends StatelessWidget {
               );
               toastification.show(
                 style: ToastificationStyle.simple,
-                title: const Text("You data has been copied"),
+                title: Text(AppLocalizations.of(Get.context!)!.yourDataHasBeenCopied),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 4),
                 applyBlurEffect: true,
               );
             },
             leading: const Icon(Icons.upload),
-            title: const Text("Export your data"),
+            title: Text(AppLocalizations.of(context)!.exportYourData),
           ),
           ListTile(
             onTap: () async {
               Get.dialog(AlertDialog(
-                title: const Text("Clear all your data"),
-                content: const Text("Do you want to clear all your data ?"),
+                title: Text(AppLocalizations.of(context)!.clearAllYourData),
+                content: Text(AppLocalizations.of(context)!.doYouWantToClearAllYourData),
                 actions: [
                   TextButton(
                     onPressed: Get.back,
-                    child: const Text("No"),
+                    child: Text(AppLocalizations.of(context)!.no),
                   ),
                   FilledButton(
                     onPressed: () {
                       Repository.to.clearApp();
                       Get.back();
                     },
-                    child: const Text("Yes"),
+                    child: Text(AppLocalizations.of(context)!.yes),
                   ),
                 ],
               ));
             },
             leading: const Icon(Icons.clear_all),
-            title: const Text("Clear all your data"),
+            title: Text(AppLocalizations.of(context)!.clearAllYourData),
           ),
         ],
       );

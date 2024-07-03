@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditPopupView extends StatelessWidget {
   final TextEditingController textEditingController;
@@ -14,30 +15,30 @@ class EditPopupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.edit),
-          SizedBox(width: 8),
-          Text("Edit"),
-          Spacer(),
-          CloseButton(),
+          const Icon(Icons.edit),
+          const SizedBox(width: 8),
+          Text(AppLocalizations.of(context)!.edit),
+          const Spacer(),
+          const CloseButton(),
         ],
       ),
       content: TextField(
         controller: textEditingController,
         maxLines: null,
-        decoration: const InputDecoration(
-          labelText: "Title",
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context)!.title,
         ),
       ),
       actions: [
         TextButton(
           onPressed: Get.back,
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: onSave,
-          child: const Text("Save"),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );

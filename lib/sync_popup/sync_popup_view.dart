@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riffle/sync_popup/sync_popup_controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SyncPopupView extends StatelessWidget {
   const SyncPopupView({super.key});
@@ -9,11 +10,11 @@ class SyncPopupView extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(SyncPopupController());
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Text("Sync your devices"),
-          SizedBox(width: 8),
-          CloseButton(),
+          Text(AppLocalizations.of(context)!.syncYourDevices),
+          const SizedBox(width: 8),
+          const CloseButton(),
         ],
       ),
       content: Focus(
@@ -23,7 +24,7 @@ class SyncPopupView extends StatelessWidget {
             return TextField(
               controller: c.syncCodeController,
               decoration: InputDecoration(
-                labelText: "Sync code",
+                labelText: AppLocalizations.of(context)!.syncCode,
                 suffixIcon: Builder(
                   builder: (context) {
                     if (GetPlatform.isMobile) {
@@ -31,19 +32,21 @@ class SyncPopupView extends StatelessWidget {
                         onSelected: c.selectSyncPopupValue,
                         itemBuilder: (BuildContext context) {
                           return [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: SyncPopupMenu.generateSyncCode,
                               child: ListTile(
-                                leading: Icon(Icons.generating_tokens),
-                                title: Text("Generate your Sync code"),
+                                leading: const Icon(Icons.generating_tokens),
+                                title: Text(AppLocalizations.of(context)!
+                                    .generateYourSyncCode),
                               ),
                             ),
                             if (GetPlatform.isMobile)
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: SyncPopupMenu.scanQrCode,
                                 child: ListTile(
-                                  leading: Icon(Icons.qr_code_scanner),
-                                  title: Text("Scan QR code"),
+                                  leading: const Icon(Icons.qr_code_scanner),
+                                  title: Text(
+                                      AppLocalizations.of(context)!.scanQRCode),
                                 ),
                               ),
                           ];
@@ -56,7 +59,10 @@ class SyncPopupView extends StatelessWidget {
                     );
                   },
                 ),
-                errorText: [null, "Field required"][c.syncCodeError],
+                errorText: [
+                  null,
+                  AppLocalizations.of(context)!.required
+                ][c.syncCodeError],
               ),
               onChanged: c.onSyncCodeChange,
               onSubmitted: (_) => c.startSync,
@@ -67,11 +73,11 @@ class SyncPopupView extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: Get.back,
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: SyncPopupController.to.startSync,
-          child: const Text("Start sync"),
+          child: Text(AppLocalizations.of(context)!.startSync),
         ),
       ],
     );

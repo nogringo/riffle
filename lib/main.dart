@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:riffle/constant.dart';
@@ -16,6 +17,7 @@ import 'package:super_hot_key/super_hot_key.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:toastification/toastification.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart'; 
 
 // ! App volume is not saved between app restart
 // TODO disable drag window by pinching the app bar buttons
@@ -24,6 +26,8 @@ import 'package:window_manager/window_manager.dart';
 // TODO remove lag when seeking
 // TODO manage app updates
 // TODO support languages
+// TODO rename music
+// TODO when path is unopenable give the path to the user
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -115,6 +119,11 @@ class MyApp extends StatelessWidget {
         builder: (c) {
           return GetMaterialApp(
             title: 'Riffle',
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            // supportedLocales: AppLocalizations.supportedLocales,
+            supportedLocales: [
+              Locale("fr"),
+            ],
             debugShowCheckedModeBanner: kDebugMode,
             theme: c.lightTheme,
             darkTheme: c.darkTheme,

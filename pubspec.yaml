@@ -31,6 +31,9 @@ dependencies:
   cloud_firestore: ^5.0.1
   pretty_qr_code: ^3.3.0
   mobile_scanner: ^5.1.1
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -41,6 +44,7 @@ dev_dependencies:
   msix: ^3.16.7
 
 flutter:
+  generate: true
   uses-material-design: true
 
   assets:

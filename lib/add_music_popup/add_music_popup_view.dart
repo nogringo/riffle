@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riffle/add_music_popup/add_music_popup_controller.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddMusicPopupView extends StatelessWidget {
   const AddMusicPopupView({super.key});
@@ -15,9 +16,11 @@ class AddMusicPopupView extends StatelessWidget {
         children: [
           GetBuilder<AddMusicPopupController>(
             builder: (controller) {
-              return Text(controller.isAddMusicMode
-                  ? "Add a music"
-                  : "Import your data");
+              return Text(
+                controller.isAddMusicMode
+                    ? AppLocalizations.of(context)!.addAMusic
+                    : AppLocalizations.of(context)!.importYourData,
+              );
             },
           ),
           const CloseButton(),
@@ -31,8 +34,9 @@ class AddMusicPopupView extends StatelessWidget {
             builder: (controller) {
               return Text(
                 controller.isAddMusicMode
-                    ? "Enter a youtube video link to add a new music"
-                    : "Paste your exported data bellow",
+                    ? AppLocalizations.of(context)!
+                        .enterAYoutubeVideoLinkToAddANewMusic
+                    : AppLocalizations.of(context)!.pasteYourExportedDataBellow,
               );
             },
           ),
@@ -48,11 +52,11 @@ class AddMusicPopupView extends StatelessWidget {
                         controller: controller.linkController,
                         decoration: InputDecoration(
                           border: const OutlineInputBorder(),
-                          labelText: "Video link",
+                          labelText: AppLocalizations.of(context)!.videoLink,
                           errorText: [
                             null,
-                            "Required",
-                            "Invalide",
+                            AppLocalizations.of(context)!.required,
+                            AppLocalizations.of(context)!.invalide,
                           ][controller.linkError],
                         ),
                         onSubmitted: (_) => controller.addMusic(),
@@ -61,7 +65,8 @@ class AddMusicPopupView extends StatelessWidget {
                     const SizedBox(height: 12),
                     TextButton.icon(
                       onPressed: () => controller.setMode(PopupMode.importData),
-                      label: const Text("Or import you data"),
+                      label:
+                          Text(AppLocalizations.of(context)!.orImportYourData),
                       icon: const Icon(Icons.download),
                     ),
                   ],
@@ -76,11 +81,11 @@ class AddMusicPopupView extends StatelessWidget {
                       controller: controller.exportedDataController,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: "Exported data",
+                        labelText: AppLocalizations.of(context)!.exportedData,
                         errorText: [
                           null,
-                          "Required",
-                          "Invalide",
+                          AppLocalizations.of(context)!.required,
+                          AppLocalizations.of(context)!.invalide,
                         ][controller.exportedDataError],
                       ),
                       onSubmitted: (_) => controller.import(),
@@ -119,12 +124,18 @@ class AddMusicPopupView extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: Get.back,
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         GetBuilder<AddMusicPopupController>(builder: (controller) {
           return FilledButton(
-            onPressed: controller.isAddMusicMode ? controller.addMusic : controller.import,
-            child: Text(controller.isAddMusicMode ? "Add" : "Import"),
+            onPressed: controller.isAddMusicMode
+                ? controller.addMusic
+                : controller.import,
+            child: Text(
+              controller.isAddMusicMode
+                  ? AppLocalizations.of(context)!.add
+                  : AppLocalizations.of(context)!.import,
+            ),
           );
         }),
       ],
