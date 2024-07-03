@@ -120,10 +120,7 @@ class MyApp extends StatelessWidget {
           return GetMaterialApp(
             title: 'Riffle',
             localizationsDelegates: AppLocalizations.localizationsDelegates,
-            // supportedLocales: AppLocalizations.supportedLocales,
-            supportedLocales: [
-              Locale("fr"),
-            ],
+            supportedLocales: AppLocalizations.supportedLocales,
             debugShowCheckedModeBanner: kDebugMode,
             theme: c.lightTheme,
             darkTheme: c.darkTheme,
