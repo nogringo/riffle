@@ -23,6 +23,7 @@ import 'package:window_manager/window_manager.dart';
 // TODO if Get.width < 500 show qr code in dialog
 // TODO remove lag when seeking
 // TODO manage app updates
+// TODO support languages
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
