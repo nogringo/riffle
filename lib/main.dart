@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:riffle/constant.dart';
@@ -28,6 +27,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // TODO support languages
 // TODO rename music
 // TODO when path is unopenable give the path to the user
+// TODO add end to end encryption
+// TODO inform user that sync use google servisies
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
