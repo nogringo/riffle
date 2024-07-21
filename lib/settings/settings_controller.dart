@@ -1,0 +1,5 @@
+class SettingsController {
+  void openSyncPannel() {
+    
+  }
+}

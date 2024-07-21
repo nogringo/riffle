@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riffle/models/music.dart';
@@ -33,7 +31,7 @@ class AddMusicPopupController extends GetxController {
     update();
   }
 
-  void addMusic() {
+  void addMusic() async {
     if (linkController.text.isEmpty) {
       linkError = 1;
       update();
@@ -48,60 +46,9 @@ class AddMusicPopupController extends GetxController {
       return;
     }
 
-    Repository.to.addNewMusic(Music(youtubeVideoId: id));
-
-    Get.back();
-  }
-
-  void import() {
-    if (exportedDataController.text.isEmpty) {
-      exportedDataError = 1;
-      update();
-      return;
-    }
-
-    String json = exportedDataController.text;
-    List<Music> exportedMusicList = [];
-    try {
-      List<dynamic> exportedData = jsonDecode(json);
-      for (var musicData in exportedData) {
-        exportedMusicList.add(Music.fromJson(musicData));
-      }
-    } catch (e) {
-      exportedDataError = 2;
-      update();
-      return;
-    }
-
-    if (importMode == ImportMode.merge) {
-      int lastFoundIndex = -1;
-      for (Music music in exportedMusicList) {
-        final foundIndex = Repository.to.musicList.indexWhere(
-          (e) => e.youtubeVideoId == music.youtubeVideoId,
-        );
-        final exist = foundIndex != -1;
-
-        if (exist) {
-          lastFoundIndex = foundIndex;
-        } else {
-          lastFoundIndex++;
-          Repository.to.musicList.insert(lastFoundIndex, music);
-        }
-      }
-    } else {
-      for (Music music in Repository.to.musicList) {
-        final exist = exportedMusicList.firstWhereOrNull(
-              (e) => e.youtubeVideoId == music.youtubeVideoId,
-            ) !=
-            null;
-        if (!exist) music.delete();
-      }
-      Repository.to.musicList = exportedMusicList;
-    }
-
-    Repository.to.saveMusicOnDevice();
-    Repository.to.saveMusicOnFirestore();
-    Repository.to.update();
+    await Repository.to.isar.writeTxn(() async {
+      await Repository.to.isar.musics.put(Music(youtubeVideoId: id));
+    });
 
     Get.back();
   }

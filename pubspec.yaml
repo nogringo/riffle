@@ -23,10 +23,9 @@ dependencies:
   get_storage: ^2.1.1
   uuid: ^4.4.0
   super_hot_key: ^0.8.17
-  font_awesome_flutter: ^10.7.0
   toastification: ^2.0.0
   url_launcher: ^6.3.0
-  system_theme: ^2.3.1
+  system_theme: ^3.0.0
   firebase_core: ^3.1.0
   cloud_firestore: ^5.0.1
   pretty_qr_code: ^3.3.0
@@ -34,14 +33,21 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  bip39: ^1.0.6
+  encrypt: ^5.0.3
+  crypto: ^3.0.3
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
   icons_launcher: ^2.1.7
   msix: ^3.16.7
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.11
 
 flutter:
   generate: true

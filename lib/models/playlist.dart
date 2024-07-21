@@ -1,8 +1,10 @@
-import 'package:riffle/models/music.dart';
+import 'package:isar/isar.dart';
 
+part 'playlist.g.dart';
+
+@collection
 class Playlist {
-  final String title;
-  final List<Music> music;
+  Id id = Isar.autoIncrement;
 
-  const Playlist({required this.title, required this.music});
+  String? name;
 }

@@ -1,50 +1,39 @@
 import 'dart:io';
 
-import 'package:audio_service/audio_service.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:riffle/api.dart';
+import 'package:isar/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:riffle/constant.dart';
+import 'package:riffle/controllers/music_controller.dart';
 import 'package:riffle/path_provider_service.dart';
 import 'package:riffle/repository.dart';
-import 'package:toastification/toastification.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class Music extends GetxController {
-  static Music get to => Get.find();
+part 'music.g.dart';
+
+@collection
+class Music {
+  Id id = Isar.autoIncrement;
 
   String youtubeVideoId;
-
   String? title;
-  Duration? duration;
+  int? durationInMillisecond;
 
-  ColorScheme? colorScheme;
+  @ignore
+  late MusicController controller;
 
-  late String thumbnailPath;
+  @ignore
+  Duration? get duration => durationInMillisecond == null
+      ? null
+      : Duration(milliseconds: durationInMillisecond!);
 
-  ThemeData? get themeData {
-    if (colorScheme == null) return null;
-    return ThemeData.from(colorScheme: colorScheme!);
+  set duration(Duration? value) {
+    if (value == null) {
+      durationInMillisecond = null;
+      return;
+    }
+    durationInMillisecond = value.inMilliseconds;
   }
 
-  TextEditingController get titleController {
-    return TextEditingController(text: title);
-  }
-
-  MediaItem get mediaItem {
-    return MediaItem(
-      id: youtubeVideoId,
-      title: title ?? youtubeVideoId,
-      duration: duration,
-      artUri: Uri.file(
-        thumbnailPath,
-      ),
-    );
-  }
-
+  @ignore
   Directory get musicDir {
     return Directory(path.join(
       PathProviderService().documentsPath,
@@ -54,158 +43,53 @@ class Music extends GetxController {
     ));
   }
 
-  bool get thumbnailExists => File(thumbnailPath).existsSync();
-  bool get audioExists => musicDir
-      .listSync()
-      .where((entitie) => entitie.path.endsWith(".mp3"))
-      .isNotEmpty;
+  @ignore
+  String get thumbnailPath => path.join(musicDir.path, "thumbnail.jpg");
 
-  String? get audioPath {
-    try {
-      return musicDir
-          .listSync()
-          .where((entitie) => entitie.path.endsWith(".mp3"))
-          .first
-          .path;
-    } catch (e) {
-      return null;
-    }
+  // @ignore
+  // bool get isMetaDataFetched => title != null;
+
+  // @ignore
+  // bool get thumbnailExists => File(thumbnailPath).existsSync();
+
+  Music({required this.youtubeVideoId, this.title, this.durationInMillisecond}) {
+    controller = MusicController(music: this);
   }
 
-  Music({required this.youtubeVideoId, this.title, this.duration}) {
-    thumbnailPath = path.join(
-      musicDir.path,
-      "thumbnail.jpg",
-    );
+  // fetchMetaData() async {
+  //   final yt = YoutubeExplode();
+  //   try {
+  //     final videoData = await yt.videos.get(youtubeVideoId);
 
-    if (thumbnailExists) {
-      computeThumbnailColorScheme();
-    } else {
-      asyncConstructor();
-    }
-  }
+  //     title = videoData.title;
+  //     duration = videoData.duration;
 
-  void asyncConstructor() async {
-    try {
-      await download();
-    } catch (e) {
-      //
-    }
-  }
+  //     await Repository.to.isar.writeTxn(() async {
+  //       await Repository.to.isar.musics.put(this);
+  //     });
+  //   } catch (e) {
+  //     print("No internet");
+  //   }
 
-  Future<void> download() async {
-    try {
-      await downloadMetaData();
-      await downloadAudio();
-    } catch (e) {
-      toastification.show(
-        type: ToastificationType.error,
-        style: ToastificationStyle.flat,
-        title: Text(AppLocalizations.of(Get.context!)!.downloadError),
-        description: Text(AppLocalizations.of(Get.context!)!.checkYourInternetConnectivity),
-        alignment: Alignment.bottomLeft,
-        borderRadius: BorderRadius.circular(12.0),
-        applyBlurEffect: true,
-        showProgressBar: false,
-        closeOnClick: true,
-        icon: const Icon(Icons.wifi_off)
-      );
-    }
-  }
+  //   yt.close();
+  // }
 
-  Future<void> downloadMetaData() async {
-    final yt = YoutubeExplode();
-    final videoData = await yt.videos.get(youtubeVideoId);
-    title = videoData.title;
-    duration = videoData.duration;
-    yt.close();
+  // void computeThumbnailColorScheme() async {
+  //   if (!thumbnailExists) return;
 
-    await Api().downloadThumbnail(this);
-    computeThumbnailColorScheme();
+  //   colorScheme = await ColorScheme.fromImageProvider(
+  //     provider: FileImage(File(thumbnailPath)),
+  //     brightness: Get.theme.brightness,
+  //   );
 
-    update();
-    Repository.to.saveMusicOnDevice();
-    Repository.to.saveMusicOnFirestore();
-  }
+  //   print(colorScheme);
+  // }
 
-  Future<void> downloadAudio() async {
-    await Api().downloadAudio(this);
-    update();
-  }
+  void delete() async {
+    await musicDir.delete(recursive: true);
 
-  void computeThumbnailColorScheme() async {
-    if (!thumbnailExists) return;
-
-    colorScheme = await ColorScheme.fromImageProvider(
-      provider: FileImage(File(thumbnailPath)),
-      brightness: Get.theme.brightness,
-    );
-    update();
-  }
-
-  Future<String> getTitle() async {
-    if (title != null) return title!;
-    var yt = YoutubeExplode();
-    final videoData = await yt.videos.get(youtubeVideoId);
-    title = videoData.title;
-    yt.close();
-    update();
-    return title!;
-  }
-
-  Future<Duration> getDuration() async {
-    if (duration != null) return duration!;
-    if (audioPath != null) {
-      final player = AudioPlayer();
-      await player.setSourceDeviceFile(audioPath!);
-      final duration = await player.getDuration();
-      player.dispose();
-      update();
-      return duration!;
-    }
-    var yt = YoutubeExplode();
-    final videoData = await yt.videos.get(youtubeVideoId);
-    duration = videoData.duration;
-    yt.close();
-    update();
-    return duration!;
-  }
-
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> result = {
-      'youtubeVideoId': youtubeVideoId,
-    };
-
-    if (title != null) result["title"] = title!;
-    if (duration != null) result["duration"] = duration!.inMilliseconds;
-
-    return result;
-  }
-
-  factory Music.fromJson(Map<String, dynamic> json) {
-    return Music(
-      youtubeVideoId: json['youtubeVideoId'],
-      title: json["title"],
-      duration: json["duration"] != null
-          ? Duration(milliseconds: json["duration"])
-          : null,
-    );
-  }
-
-  Future<void> rename(String newName) async {
-    // final parentDir = Directory(filePath).parent;
-    // final newPath = path.join(parentDir.path, "$newName$extension");
-    // await File(filePath).rename(newPath);
-    // filePath = newPath;
-    // update();
-    // return;
-  }
-
-  Future<void> delete() async {
-    try {
-      await musicDir.delete(recursive: true);
-    } catch (e) {
-      //
-    }
+    await Repository.to.isar.writeTxn(() async {
+      await Repository.to.isar.musics.delete(id);
+    });
   }
 }

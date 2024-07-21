@@ -47,7 +47,7 @@
   "@import": {
     "description": ""
   },
-  "myMusic": "My misic",
+  "myMusic": "My music",
   "@myMusic": {
     "description": ""
   },
@@ -153,6 +153,42 @@
   },
   "checkYourInternetConnectivity": "Check your internet connectivity",
   "@checkYourInternetConnectivity": {
+    "description": ""
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": ""
+  },
+  "sync": "Sync",
+  "@sync": {
+    "description": ""
+  },
+  "home": "Home",
+  "@home": {
+    "description": ""
+  },
+  "playlists": "Playlists",
+  "@playlists": {
+    "description": ""
+  },
+  "history": "History",
+  "@history": {
+    "description": ""
+  },
+  "more": "More",
+  "@more": {
+    "description": ""
+  },
+  "download": "Download",
+  "@download": {
+    "description": ""
+  },
+  "addToQueue": "Add to queue",
+  "@addToQueue": {
+    "description": ""
+  },
+  "saveToPlaylist": "Save to playlist",
+  "@saveToPlaylist": {
     "description": ""
   }
 }

@@ -5,11 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riffle/constant.dart';
 import 'package:riffle/firebase_options.dart';
 import 'package:riffle/home/home_page_view.dart';
+import 'package:riffle/models/music.dart';
+import 'package:riffle/models/playlist.dart';
 import 'package:riffle/my_audio_handler.dart';
 import 'package:riffle/path_provider_service.dart';
+import 'package:riffle/player/player_controller.dart';
 import 'package:riffle/repository.dart';
 import 'package:riffle/theme_controller.dart';
 import 'package:super_hot_key/super_hot_key.dart';
@@ -19,12 +24,10 @@ import 'package:window_manager/window_manager.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart'; 
 
 // ! App volume is not saved between app restart
-// TODO disable drag window by pinching the app bar buttons
 // TODO indicate if the music exist or not on the ui
 // TODO if Get.width < 500 show qr code in dialog
 // TODO remove lag when seeking
 // TODO manage app updates
-// TODO support languages
 // TODO rename music
 // TODO when path is unopenable give the path to the user
 // TODO add end to end encryption
@@ -56,11 +59,9 @@ void main() async {
 
     WindowOptions windowOptions = const WindowOptions(
       title: "Riffle",
+      titleBarStyle: TitleBarStyle.hidden,
     );
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
+    windowManager.waitUntilReadyToShow(windowOptions);
   }
 
   if (GetPlatform.isMobile) {
@@ -73,6 +74,14 @@ void main() async {
     );
     Get.put(audioHandler);
   }
+
+  final dir = await getApplicationDocumentsDirectory();
+  Repository.to.isar = await Isar.open(
+    [MusicSchema, PlaylistSchema],
+    directory: dir.path,
+  );
+
+  Get.put(PlayerController());
 
   runApp(const MyApp());
 }

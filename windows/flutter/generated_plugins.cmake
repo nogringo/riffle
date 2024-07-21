@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   cloud_firestore
   firebase_core
   irondash_engine_context
+  isar_flutter_libs
   screen_retriever
   super_native_extensions
   system_theme

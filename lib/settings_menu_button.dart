@@ -1,65 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:riffle/constant.dart';
-import 'package:riffle/desktop_windows_buttons.dart';
 import 'package:riffle/repository.dart';
 import 'package:riffle/scanner/mobile_scanner_overlay.dart';
 import 'package:riffle/theme_controller.dart';
 import 'package:toastification/toastification.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-class DesktopAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const DesktopAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppBar(
-          actions: [
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTapDown: (_) => windowManager.startDragging(),
-                    ),
-                  ),
-                  const DesktopWindowButtons(),
-                ],
-              ),
-            )
-          ],
-          toolbarHeight: kToolbarHeight * 0.5,
-        ),
-        AppBar(
-          title: const Text(appName),
-          actions: [
-            GetBuilder<Repository>(
-              builder: (c) {
-                return Switch(
-                  value: c.isSyncEnabled,
-                  onChanged: c.onSyncSwitchToggle,
-                  thumbIcon: const WidgetStatePropertyAll(Icon(Icons.sync)),
-                );
-              },
-            ),
-            const SettingsMenuButton(),
-          ],
-        ),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight * 1.5);
-}
 
 class SettingsMenuButton extends StatelessWidget {
   const SettingsMenuButton({
@@ -119,12 +66,14 @@ class SettingsMenuButton extends StatelessWidget {
             ),
           ListTile(
             onTap: () async {
-              await Clipboard.setData(
-                ClipboardData(text: jsonEncode(Repository.to.musicList)),
-              );
+              // TODO
+              // await Clipboard.setData(
+              //   ClipboardData(text: jsonEncode(Repository.to.musicList)),
+              // );
               toastification.show(
                 style: ToastificationStyle.simple,
-                title: Text(AppLocalizations.of(Get.context!)!.yourDataHasBeenCopied),
+                title: Text(
+                    AppLocalizations.of(Get.context!)!.yourDataHasBeenCopied),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 4),
                 applyBlurEffect: true,
@@ -134,10 +83,11 @@ class SettingsMenuButton extends StatelessWidget {
             title: Text(AppLocalizations.of(context)!.exportYourData),
           ),
           ListTile(
-            onTap: () async {
+            onTap: () {
               Get.dialog(AlertDialog(
                 title: Text(AppLocalizations.of(context)!.clearAllYourData),
-                content: Text(AppLocalizations.of(context)!.doYouWantToClearAllYourData),
+                content: Text(
+                    AppLocalizations.of(context)!.doYouWantToClearAllYourData),
                 actions: [
                   TextButton(
                     onPressed: Get.back,
@@ -163,9 +113,7 @@ class SettingsMenuButton extends StatelessWidget {
 }
 
 class QrCodePopupView extends StatelessWidget {
-  const QrCodePopupView({
-    super.key,
-  });
+  const QrCodePopupView({super.key});
 
   @override
   Widget build(BuildContext context) {

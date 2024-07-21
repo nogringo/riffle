@@ -1,23 +1,22 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:isar/isar.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/my_audio_handler.dart';
 import 'package:riffle/sync_popup/sync_popup_view.dart';
-import 'package:riffle/theme_controller.dart';
 
 enum RepeatMode { noRepeat, repeatOne, repeat }
 
 class Repository extends GetxController {
   static Repository get to => Get.find();
 
+  late Isar isar;
   final box = GetStorage();
-  List<Music> musicList = [];
   Music? selectedMusic;
 
   final player = AudioPlayer();
@@ -37,6 +36,7 @@ class Repository extends GetxController {
   }
 
   String? get syncCode => box.read("syncCode");
+
   set syncCode(String? value) {
     if (value != null) value = value.trim();
     if (value == "") value = null;
@@ -65,7 +65,6 @@ class Repository extends GetxController {
       FirebaseFirestore.instance.collection("users").doc(syncCode);
 
   Repository() {
-    box.write("music", null);
     player.onPlayerStateChanged.listen((PlayerState event) {
       if (event == PlayerState.completed) {
         if (repeatMode == RepeatMode.repeatOne) {
@@ -88,19 +87,23 @@ class Repository extends GetxController {
   @override
   void update([List<Object>? ids, bool condition = true]) {
     if (GetPlatform.isMobile) MyAudioHandler.to.update();
-    super.update(ids, condition);
-  }
-
-  void loadMusicList() {
-    List<dynamic> savedMusicList = jsonDecode(box.read("music") ?? "[]");
-    musicList = [];
-    for (Map<String, dynamic> savedMusic in savedMusicList) {
-      musicList.add(Music.fromJson(savedMusic));
+    try {
+      super.update(ids, condition);
+    } catch (e) {
+      //
     }
-    update();
-
-    if (isSyncEnabled) listenToMusics();
   }
+
+  // void loadMusicList() {
+  //   List<dynamic> savedMusicList = jsonDecode(box.read("music") ?? "[]");
+  //   musicList = [];
+  //   for (Map<String, dynamic> savedMusic in savedMusicList) {
+  //     musicList.add(Music.fromJson(savedMusic));
+  //   }
+  //   update();
+
+  //   if (isSyncEnabled) listenToMusics();
+  // }
 
   void listenToMusics() {
     syncSubscription?.cancel();
@@ -109,48 +112,39 @@ class Repository extends GetxController {
         final docData = event.data();
         if (docData == null) return;
 
-        if (jsonEncode(docData["musicList"]) == jsonEncode(musicList)) return;
+        // if (jsonEncode(docData["musicList"]) == jsonEncode(musicList)) return;
 
-        musicList = [];
-        for (Map<String, dynamic> savedMusic in docData["musicList"]) {
-          musicList.add(Music.fromJson(savedMusic));
-        }
-        update();
-        saveMusicOnDevice();
+        // musicList = [];
+        // for (Map<String, dynamic> savedMusic in docData["musicList"]) {
+        //   // musicList.add(Music.fromJson(savedMusic));
+        // }
+        // update();
+        // saveMusicOnDevice();
       },
     );
   }
 
-  void saveMusicOnDevice() {
-    box.write("music", jsonEncode(musicList));
-  }
-
-  void saveMusicOnFirestore() {
-    if (!isSyncEnabled) return;
-    syncCodeDocRef
-        .set({"musicList": musicList.map((e) => e.toJson()).toList()});
-  }
-
   void addNewMusic(Music newMusic) async {
-    musicList.add(newMusic);
-    update();
-    saveMusicOnDevice();
-    saveMusicOnFirestore();
+    await isar.writeTxn(() async {
+      await isar.musics.put(newMusic);
+    });
   }
 
   void select(Music music) async {
-    if (music.themeData != null) {
-      ThemeController.to.changeTheme(music.themeData!);
-    }
+    // if (music.colorScheme != null) {
+    //   ThemeController.to.changeTheme(
+    //     ThemeData.from(colorScheme: music.colorScheme!),
+    //   );
+    // }
 
     selectedMusic = music;
 
     if (GetPlatform.isMobile) {
-      MyAudioHandler.to.mediaItem.add(selectedMusic!.mediaItem);
+      // MyAudioHandler.to.mediaItem.add(selectedMusic!.mediaItem);
     }
 
     if (player.source != null) await player.seek(Duration.zero);
-    player.play(DeviceFileSource(selectedMusic!.audioPath!));
+    // player.play(DeviceFileSource(selectedMusic!.audioPath!));
 
     update();
   }
@@ -164,7 +158,7 @@ class Repository extends GetxController {
   }
 
   void replay() async {
-    player.play(DeviceFileSource(selectedMusic!.audioPath!));
+    // player.play(DeviceFileSource(selectedMusic!.audioPath!));
   }
 
   void onLoopButtonPressed() async {
@@ -196,7 +190,7 @@ class Repository extends GetxController {
 
   void seek(Duration position) async {
     if (player.source == null) {
-      await player.setSourceDeviceFile(selectedMusic!.audioPath!);
+      // await player.setSourceDeviceFile(selectedMusic!.audioPath!);
     }
 
     player.seek(position);
@@ -211,17 +205,6 @@ class Repository extends GetxController {
       resume();
     }
     playerStateOnSeekStart = null;
-  }
-
-  void onReorderMusic(int oldIndex, int newIndex) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final Music item = musicList.removeAt(oldIndex);
-    musicList.insert(newIndex, item);
-    update();
-    saveMusicOnDevice();
-    saveMusicOnFirestore();
   }
 
   void playPause() {
@@ -246,10 +229,6 @@ class Repository extends GetxController {
   }
 
   void clearApp() {
-    syncCode = null;
-    for (Music element in musicList) {
-      element.delete();
-    }
-    musicList = [];
+    // TODO
   }
 }

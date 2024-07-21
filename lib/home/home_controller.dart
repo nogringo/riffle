@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,18 +7,24 @@ import 'package:riffle/home/menu.dart';
 import 'package:riffle/models/music.dart';
 import 'package:riffle/repository.dart';
 import 'package:toastification/toastification.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class HomePageController extends GetxController {
-  static HomePageController get to => Get.find();
+class HomeController extends GetxController {
+  static HomeController get to => Get.find();
 
-  HomePageController() {
-    Repository.to.loadMusicList();
+  int _selectedIndex = 0;
+
+  int get selectedIndex => _selectedIndex;
+  set selectedIndex(int value) {
+    _selectedIndex = value;
+    update();
   }
 
   void menuAction(Menu menuOption, Music music) async {
     switch (menuOption) {
+      case Menu.download:
+        // music.fetchMetaData();
+        break;
       case Menu.edit:
         openEditMusicPopup(music);
         break;
@@ -31,19 +35,34 @@ class HomePageController extends GetxController {
         openMusicFolder(music);
         break;
       case Menu.delete:
-        deleteMusic(music);
+        music.delete();
+        break;
+      case Menu.saveToPlaylist:
+        Get.dialog(AlertDialog(
+          title: Row(
+            children: [
+              Text("Save to"),
+              CloseButton(),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () {
+              
+            }, child: Text("Create a new playlist"))
+          ],
+        ));
         break;
       default:
     }
   }
 
   void openEditMusicPopup(Music music) {
-    final textController = music.titleController;
+    // final textController = music.titleController;
     Get.dialog(EditPopupView(
-      textEditingController: textController,
+      textEditingController: TextEditingController(),
       onSave: () {
         Get.back();
-        music.rename(textController.text);
+        // music.rename(textController.text);
       },
     ));
   }
@@ -62,7 +81,7 @@ class HomePageController extends GetxController {
 
   void openMusicFolder(Music music) async {
     try {
-      await launchUrl(Uri.parse(File(music.thumbnailPath).parent.path));
+      // await launchUrl(Uri.parse(File(music.thumbnailPath).parent.path));
     } catch (e) {
       toastification.show(
         style: ToastificationStyle.simple,
@@ -74,14 +93,6 @@ class HomePageController extends GetxController {
     }
   }
 
-  void deleteMusic(Music music) {
-    Repository.to.musicList.remove(music);
-    Repository.to.update();
-    music.delete();
-    Repository.to.saveMusicOnDevice();
-    Repository.to.saveMusicOnFirestore();
-  }
-
   void openAddMusicPopup() {
     Get.dialog(const AddMusicPopupView());
   }
@@ -90,5 +101,9 @@ class HomePageController extends GetxController {
     int position =
         (value * Repository.to.selectedMusic!.duration!.inMilliseconds).toInt();
     Repository.to.seek(Duration(milliseconds: position));
+  }
+
+  void onDestinationSelected(int value) {
+    selectedIndex = value;
   }
 }

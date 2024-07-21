@@ -9,7 +9,6 @@ class AddMusicPopupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(AddMusicPopupController());
-    // TODO animate the size of the AlertDialog when the mode change
     return AlertDialog(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -33,88 +32,32 @@ class AddMusicPopupView extends StatelessWidget {
           GetBuilder<AddMusicPopupController>(
             builder: (controller) {
               return Text(
-                controller.isAddMusicMode
-                    ? AppLocalizations.of(context)!
-                        .enterAYoutubeVideoLinkToAddANewMusic
-                    : AppLocalizations.of(context)!.pasteYourExportedDataBellow,
+                AppLocalizations.of(context)!
+                    .enterAYoutubeVideoLinkToAddANewMusic,
               );
             },
           ),
           const SizedBox(height: 12),
           GetBuilder<AddMusicPopupController>(
             builder: (controller) {
-              if (controller.isAddMusicMode) {
-                return Column(
-                  children: [
-                    Focus(
-                      onFocusChange: controller.linkFocusChange,
-                      child: TextField(
-                        controller: controller.linkController,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          labelText: AppLocalizations.of(context)!.videoLink,
-                          errorText: [
-                            null,
-                            AppLocalizations.of(context)!.required,
-                            AppLocalizations.of(context)!.invalide,
-                          ][controller.linkError],
-                        ),
-                        onSubmitted: (_) => controller.addMusic(),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton.icon(
-                      onPressed: () => controller.setMode(PopupMode.importData),
-                      label:
-                          Text(AppLocalizations.of(context)!.orImportYourData),
-                      icon: const Icon(Icons.download),
-                    ),
-                  ],
-                );
-              }
               return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Focus(
-                    onFocusChange: controller.exportedDataFocusChange,
+                    onFocusChange: controller.linkFocusChange,
                     child: TextField(
-                      controller: controller.exportedDataController,
+                      controller: controller.linkController,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: AppLocalizations.of(context)!.exportedData,
+                        labelText: AppLocalizations.of(context)!.videoLink,
                         errorText: [
                           null,
                           AppLocalizations.of(context)!.required,
                           AppLocalizations.of(context)!.invalide,
-                        ][controller.exportedDataError],
+                        ][controller.linkError],
                       ),
-                      onSubmitted: (_) => controller.import(),
+                      onSubmitted: (_) => controller.addMusic(),
                     ),
                   ),
-                  // const SizedBox(height: 12),
-                  // CupertinoSlidingSegmentedControl<ImportMode>(
-                  //   groupValue: controller.importMode,
-                  //   onValueChanged: controller.changeImportMode,
-                  //   thumbColor: Get.theme.colorScheme.primaryContainer,
-                  //   children: <ImportMode, Widget>{
-                  //     ImportMode.merge: Text(
-                  //       'Merge',
-                  //       style: TextStyle(
-                  //         color: controller.importMode == ImportMode.merge
-                  //             ? Get.theme.colorScheme.onPrimaryContainer
-                  //             : null,
-                  //       ),
-                  //     ),
-                  //     ImportMode.replace: Text(
-                  //       'Replace',
-                  //       style: TextStyle(
-                  //         color: controller.importMode == ImportMode.replace
-                  //             ? Get.theme.colorScheme.onPrimaryContainer
-                  //             : null,
-                  //       ),
-                  //     ),
-                  //   },
-                  // ),
                 ],
               );
             },
@@ -128,13 +71,9 @@ class AddMusicPopupView extends StatelessWidget {
         ),
         GetBuilder<AddMusicPopupController>(builder: (controller) {
           return FilledButton(
-            onPressed: controller.isAddMusicMode
-                ? controller.addMusic
-                : controller.import,
+            onPressed: controller.addMusic,
             child: Text(
-              controller.isAddMusicMode
-                  ? AppLocalizations.of(context)!.add
-                  : AppLocalizations.of(context)!.import,
+              AppLocalizations.of(context)!.add,
             ),
           );
         }),

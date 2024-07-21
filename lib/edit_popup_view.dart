@@ -24,12 +24,40 @@ class EditPopupView extends StatelessWidget {
           const CloseButton(),
         ],
       ),
-      content: TextField(
-        controller: textEditingController,
-        maxLines: null,
-        decoration: InputDecoration(
-          labelText: AppLocalizations.of(context)!.title,
-        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: textEditingController,
+            maxLines: null,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.title,
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: textEditingController,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.title,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: textEditingController,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context)!.title,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       actions: [
         TextButton(

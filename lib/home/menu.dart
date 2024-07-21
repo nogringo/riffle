@@ -1,1 +1,1 @@
-enum Menu { edit, copyLink, delete, openFolder }
+enum Menu { edit, copyLink, delete, openFolder, download, addToQueue, saveToPlaylist }
