@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+import 'package:riffle/create_new_playlist_bottom_sheet/create_new_playlist_bottom_sheet_view.dart';
+import 'package:riffle/home/home_controller.dart';
 import 'package:riffle/models/playlist.dart';
 import 'package:riffle/player/player_view.dart';
 import 'package:riffle/repository.dart';
@@ -26,48 +30,8 @@ class PlaylistsView extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        showModalBottomSheet<void>(
-                          showDragHandle: true,
-                          context: context,
-                          constraints: const BoxConstraints(maxWidth: 640),
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return SizedBox(
-                              height: 150,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 32.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text("Create new playlist"),
-                                        Spacer(),
-                                        TextButton(
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                          child: Text("Cancel", style: TextStyle(color: Get.theme.colorScheme.onSurfaceVariant),),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                          child: Text("Ok"),
-                                        ),
-                                      ],
-                                    ),
-                                    TextField(
-                                      decoration: InputDecoration(
-                                        labelText: "Name",
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
+                        HomeController.to.bottomSheet =
+                            const CreateNewPlaylistBottomSheetView();
                       },
                       icon: const Icon(Icons.add),
                     ),
@@ -107,28 +71,83 @@ class PlaylistView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.blue,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Stack(
+          LayoutBuilder(builder: (context, constraints) {
+            return Column(
               children: [
                 Container(
-                  color: Colors.amber,
+                  // margin: EdgeInsets.only(bottom: 3),
+                  height: 8,
+                  width: constraints.maxWidth * 0.6,
+                  decoration: BoxDecoration(
+                    color: Get.theme.colorScheme.onPrimary,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                  ),
                 ),
                 Container(
-                  color: Colors.red,
+                  // margin: EdgeInsets.only(bottom: 3),
+                  height: 8,
+                  width: constraints.maxWidth * 0.8,
+                  decoration: BoxDecoration(
+                    color: Get.theme.colorScheme.primary,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                  ),
                 ),
-                Container(
-                  color: Colors.green,
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Stack(
+                    children: [
+                      if (playlist.musics.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.file(
+                            File(playlist.musics.first.thumbnailPath),
+                          ),
+                        ),
+                      if (playlist.musics.isEmpty)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Get.theme.colorScheme.inversePrimary,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      Positioned(
+                        bottom: 0,
+                        right: 4,
+                        child: Chip(
+                          label: Text("${playlist.musics.length} Musics"),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                20.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
+            );
+          }),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(playlist.name),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.more_vert),
+              ),
+            ],
           ),
-          // Text(title ?? playlist.title ?? ""),
         ],
       ),
     );

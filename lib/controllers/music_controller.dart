@@ -1,78 +1,43 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:riffle/api.dart';
-import 'package:riffle/constant.dart';
 import 'package:riffle/models/music.dart';
-import 'package:path/path.dart' as path;
-import 'package:riffle/path_provider_service.dart';
 import 'package:riffle/repository.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-class MusicController extends GetxController {
-  static MusicController get to => Get.find();
+// class MusicController extends GetxController {
+//   static MusicController get to => Get.find();
 
-  Music music;
+//   Music music;
 
-  ColorScheme? colorScheme;
+//   MusicController({required this.music}) {
+//     asyncConstructor();
+//   }
 
-  Directory get musicDir {
-    return Directory(path.join(
-      PathProviderService().documentsPath,
-      appName,
-      "Music",
-      music.youtubeVideoId,
-    ));
-  }
+//   void asyncConstructor() async {
+//     if (music.title == null) fetchMetaData();
+//     if (!music.thumbnailExists) await Api().downloadThumbnail(music);
+//     music.computeThumbnailColorScheme();
+//   }
 
-  String get thumbnailPath => path.join(musicDir.path, "thumbnail.jpg");
+//   fetchMetaData() async {
+//     final yt = YoutubeExplode();
+//     try {
+//       final videoData = await yt.videos.get(music.youtubeVideoId);
 
-  bool get thumbnailExists => File(thumbnailPath).existsSync();
+//       music.title = videoData.title;
+//       music.duration = videoData.duration;
 
-  MusicController({required this.music}) {
-    asyncConstructor();
-  }
+//       await Repository.to.isar.writeTxn(() async {
+//         await Repository.to.isar.musics.put(music);
+//       });
+//     } catch (e) {
+//       print("No internet");
+//     }
 
-  void asyncConstructor() async {
-    if (music.title == null) fetchMetaData();
-    if (!thumbnailExists) await Api().downloadThumbnail(music);
-    computeThumbnailColorScheme();
-  }
+//     yt.close();
+//   }
 
-  fetchMetaData() async {
-    final yt = YoutubeExplode();
-    try {
-      final videoData = await yt.videos.get(music.youtubeVideoId);
-
-      music.title = videoData.title;
-      music.duration = videoData.duration;
-
-      await Repository.to.isar.writeTxn(() async {
-        await Repository.to.isar.musics.put(music);
-      });
-    } catch (e) {
-      print("No internet");
-    }
-
-    yt.close();
-  }
-
-  void computeThumbnailColorScheme() async {
-    if (!thumbnailExists) return;
-
-    colorScheme = await ColorScheme.fromImageProvider(
-      provider: FileImage(File(thumbnailPath)),
-      brightness: Get.theme.brightness,
-    );
-    update();
-  }
-
-  void delete() async {
-    await musicDir.delete(recursive: true);
-
-    await Repository.to.isar.writeTxn(() async {
-      await Repository.to.isar.musics.delete(music.id);
-    });
-  }
-}
+//   void delete() {
+//     music.delete();
+//   }
+// }

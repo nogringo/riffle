@@ -23,107 +23,112 @@ class HomePageView extends StatelessWidget {
       onKeyEvent: Repository.to.onKeyEvent,
       child: GetBuilder<Repository>(
         builder: (repository) {
-          return Scaffold(
-            appBar: AppBar(
-              titleSpacing: 0,
-              title: const DragToMoveArea(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: kToolbarHeight,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(appName),
+          return GetBuilder<HomeController>(
+            builder: (homeController) {
+              return Scaffold(
+                appBar: AppBar(
+                  titleSpacing: 0,
+                  title: const DragToMoveArea(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: kToolbarHeight,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(appName),
+                        ),
+                      ),
                     ),
                   ),
+                  actions: [
+                    IconButton(
+                      onPressed: HomeController.to.openAddMusicPopup,
+                      icon: const Icon(Icons.add),
+                    ),
+                    IconButton(
+                      onPressed: () => Get.to(const SettingsPage()),
+                      icon: const Icon(Icons.more_vert),
+                    ),
+                    if (GetPlatform.isDesktop) const WindowButtons(),
+                  ],
                 ),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: HomeController.to.openAddMusicPopup,
-                  icon: const Icon(Icons.add),
+                // body: GetBuilder<Repository>(
+                //   builder: (repositoryController) {
+                //     if (repositoryController.musicList.isEmpty) {
+                //       return Padding(
+                //         padding: const EdgeInsets.all(8.0),
+                //         child: Center(
+                //           child: Column(
+                //             mainAxisSize: MainAxisSize.min,
+                //             children: [
+                //               Text(
+                //                 AppLocalizations.of(context)!.heyThereIsNothingHere,
+                //                 textAlign: TextAlign.center,
+                //                 style: Get.textTheme.displaySmall,
+                //               ),
+                //               const SizedBox(height: 8),
+                //               FilledButton.icon(
+                //                 onPressed: HomePageController.to.openAddMusicPopup,
+                //                 label: Text(AppLocalizations.of(context)!
+                //                     .startByAddingYourFirstMusic),
+                //                 icon: const Icon(Icons.add),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       );
+                //     }
+                //     return ReorderableListView.builder(
+                //       padding: const EdgeInsets.only(bottom: 128),
+                //       onReorder: Repository.to.onReorderMusic,
+                //       proxyDecorator: (child, _, __) => child,
+                //       buildDefaultDragHandles: GetPlatform.isMobile,
+                //       itemCount: Repository.to.musicList.length,
+                //       itemBuilder: musicViewBuilder,
+                //     );
+                //   },
+                // ),
+                body: GetBuilder<HomeController>(
+                  builder: (c) {
+                    return [
+                      const HomeView(),
+                      const PlaylistsView(),
+                      const HistoryView(),
+                    ][c.selectedIndex];
+                  },
                 ),
-                IconButton(
-                  onPressed: () => Get.to(const SettingsPage()),
-                  icon: const Icon(Icons.more_vert),
-                ),
-                if (GetPlatform.isDesktop) const WindowButtons(),
-              ],
-            ),
-            // body: GetBuilder<Repository>(
-            //   builder: (repositoryController) {
-            //     if (repositoryController.musicList.isEmpty) {
-            //       return Padding(
-            //         padding: const EdgeInsets.all(8.0),
-            //         child: Center(
-            //           child: Column(
-            //             mainAxisSize: MainAxisSize.min,
-            //             children: [
-            //               Text(
-            //                 AppLocalizations.of(context)!.heyThereIsNothingHere,
-            //                 textAlign: TextAlign.center,
-            //                 style: Get.textTheme.displaySmall,
-            //               ),
-            //               const SizedBox(height: 8),
-            //               FilledButton.icon(
-            //                 onPressed: HomePageController.to.openAddMusicPopup,
-            //                 label: Text(AppLocalizations.of(context)!
-            //                     .startByAddingYourFirstMusic),
-            //                 icon: const Icon(Icons.add),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //       );
-            //     }
-            //     return ReorderableListView.builder(
-            //       padding: const EdgeInsets.only(bottom: 128),
-            //       onReorder: Repository.to.onReorderMusic,
-            //       proxyDecorator: (child, _, __) => child,
-            //       buildDefaultDragHandles: GetPlatform.isMobile,
-            //       itemCount: Repository.to.musicList.length,
-            //       itemBuilder: musicViewBuilder,
-            //     );
-            //   },
-            // ),
-            body: GetBuilder<HomeController>(
-              builder: (c) {
-                return [
-                  const HomeView(),
-                  const PlaylistsView(),
-                  const HistoryView(),
-                ][c.selectedIndex];
-              },
-            ),
-            // floatingActionButton: FloatingActionButton(
-            //   onPressed: HomePageController.to.openAddMusicPopup,
-            //   child: const Icon(Icons.add),
-            // ),
-            // bottomNavigationBar: repository.selectedMusic == null
-            //     ? null
-            //     : const AudioPlayerController(),
-            bottomSheet: CreateNewPlaylistBottomSheet(),
-            bottomNavigationBar: GetBuilder<HomeController>(builder: (_) {
-              return NavigationBar(
-                selectedIndex: HomeController.to.selectedIndex,
-                onDestinationSelected: HomeController.to.onDestinationSelected,
-                destinations: [
-                  NavigationDestination(
-                    icon: const Icon(Icons.home_filled),
-                    label: AppLocalizations.of(context)!.home,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.playlist_play),
-                    label: AppLocalizations.of(context)!.playlists,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.history),
-                    label: AppLocalizations.of(context)!.history,
-                  ),
-                ],
+                // floatingActionButton: FloatingActionButton(
+                //   onPressed: HomePageController.to.openAddMusicPopup,
+                //   child: const Icon(Icons.add),
+                // ),
+                // bottomNavigationBar: repository.selectedMusic == null
+                //     ? null
+                //     : const AudioPlayerController(),
+                bottomSheet: homeController.bottomSheet,
+                bottomNavigationBar: GetBuilder<HomeController>(builder: (_) {
+                  return NavigationBar(
+                    selectedIndex: HomeController.to.selectedIndex,
+                    onDestinationSelected:
+                        HomeController.to.onDestinationSelected,
+                    destinations: [
+                      NavigationDestination(
+                        icon: const Icon(Icons.home_filled),
+                        label: AppLocalizations.of(context)!.home,
+                      ),
+                      NavigationDestination(
+                        icon: const Icon(Icons.playlist_play),
+                        label: AppLocalizations.of(context)!.playlists,
+                      ),
+                      NavigationDestination(
+                        icon: const Icon(Icons.history),
+                        label: AppLocalizations.of(context)!.history,
+                      ),
+                    ],
+                  );
+                }),
               );
-            }),
+            },
           );
         },
       ),
@@ -131,50 +136,7 @@ class HomePageView extends StatelessWidget {
   }
 }
 
-class CreateNewPlaylistBottomSheet extends StatelessWidget {
-  const CreateNewPlaylistBottomSheet({
-    super.key,
-  });
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Text("Create new playlist"),
-              Spacer(),
-              TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(
-                      color: Get.theme.colorScheme.onSurfaceVariant),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: Text("Ok"),
-              ),
-            ],
-          ),
-          TextField(
-            decoration: InputDecoration(
-              labelText: "Name",
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // Widget musicViewBuilder(context, index) {
 //   return GetBuilder<Music>(

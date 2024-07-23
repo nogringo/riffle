@@ -46,8 +46,9 @@ class AddMusicPopupController extends GetxController {
       return;
     }
 
+    final newMusic = Music(youtubeVideoId: id);
     await Repository.to.isar.writeTxn(() async {
-      await Repository.to.isar.musics.put(Music(youtubeVideoId: id));
+      await Repository.to.isar.musics.put(newMusic);
     });
 
     Get.back();

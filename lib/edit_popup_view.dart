@@ -37,22 +37,15 @@ class EditPopupView extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: textEditingController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.title,
-                  ),
+                child: Slider(
+                  value: 0.5,
+                  onChanged: (value) {},
                 ),
               ),
-              const SizedBox(width: 8),
               Expanded(
-                child: TextField(
-                  controller: textEditingController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    labelText: AppLocalizations.of(context)!.title,
-                  ),
+                child: Slider(
+                  value: 0.5,
+                  onChanged: (value) {},
                 ),
               ),
             ],

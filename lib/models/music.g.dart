@@ -22,13 +22,23 @@ const MusicSchema = CollectionSchema(
       name: r'durationInMillisecond',
       type: IsarType.long,
     ),
-    r'title': PropertySchema(
+    r'endTimeInMillisecond': PropertySchema(
       id: 1,
+      name: r'endTimeInMillisecond',
+      type: IsarType.long,
+    ),
+    r'startTimeInMillisecond': PropertySchema(
+      id: 2,
+      name: r'startTimeInMillisecond',
+      type: IsarType.long,
+    ),
+    r'title': PropertySchema(
+      id: 3,
       name: r'title',
       type: IsarType.string,
     ),
     r'youtubeVideoId': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'youtubeVideoId',
       type: IsarType.string,
     )
@@ -70,8 +80,10 @@ void _musicSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.durationInMillisecond);
-  writer.writeString(offsets[1], object.title);
-  writer.writeString(offsets[2], object.youtubeVideoId);
+  writer.writeLong(offsets[1], object.endTimeInMillisecond);
+  writer.writeLong(offsets[2], object.startTimeInMillisecond);
+  writer.writeString(offsets[3], object.title);
+  writer.writeString(offsets[4], object.youtubeVideoId);
 }
 
 Music _musicDeserialize(
@@ -82,8 +94,10 @@ Music _musicDeserialize(
 ) {
   final object = Music(
     durationInMillisecond: reader.readLongOrNull(offsets[0]),
-    title: reader.readStringOrNull(offsets[1]),
-    youtubeVideoId: reader.readString(offsets[2]),
+    endTimeInMillisecond: reader.readLongOrNull(offsets[1]),
+    startTimeInMillisecond: reader.readLongOrNull(offsets[2]),
+    title: reader.readStringOrNull(offsets[3]),
+    youtubeVideoId: reader.readString(offsets[4]),
   );
   object.id = id;
   return object;
@@ -99,8 +113,12 @@ P _musicDeserializeProp<P>(
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 2:
+      return (reader.readLongOrNull(offset)) as P;
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -269,6 +287,79 @@ extension MusicQueryFilter on QueryBuilder<Music, Music, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      endTimeInMillisecondIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'endTimeInMillisecond',
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      endTimeInMillisecondIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'endTimeInMillisecond',
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition> endTimeInMillisecondEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'endTimeInMillisecond',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      endTimeInMillisecondGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'endTimeInMillisecond',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      endTimeInMillisecondLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'endTimeInMillisecond',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition> endTimeInMillisecondBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'endTimeInMillisecond',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Music, Music, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -313,6 +404,80 @@ extension MusicQueryFilter on QueryBuilder<Music, Music, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      startTimeInMillisecondIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'startTimeInMillisecond',
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      startTimeInMillisecondIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'startTimeInMillisecond',
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      startTimeInMillisecondEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'startTimeInMillisecond',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      startTimeInMillisecondGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'startTimeInMillisecond',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      startTimeInMillisecondLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'startTimeInMillisecond',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterFilterCondition>
+      startTimeInMillisecondBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'startTimeInMillisecond',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -613,6 +778,30 @@ extension MusicQuerySortBy on QueryBuilder<Music, Music, QSortBy> {
     });
   }
 
+  QueryBuilder<Music, Music, QAfterSortBy> sortByEndTimeInMillisecond() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'endTimeInMillisecond', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterSortBy> sortByEndTimeInMillisecondDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'endTimeInMillisecond', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterSortBy> sortByStartTimeInMillisecond() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'startTimeInMillisecond', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterSortBy> sortByStartTimeInMillisecondDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'startTimeInMillisecond', Sort.desc);
+    });
+  }
+
   QueryBuilder<Music, Music, QAfterSortBy> sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -651,6 +840,18 @@ extension MusicQuerySortThenBy on QueryBuilder<Music, Music, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Music, Music, QAfterSortBy> thenByEndTimeInMillisecond() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'endTimeInMillisecond', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterSortBy> thenByEndTimeInMillisecondDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'endTimeInMillisecond', Sort.desc);
+    });
+  }
+
   QueryBuilder<Music, Music, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -660,6 +861,18 @@ extension MusicQuerySortThenBy on QueryBuilder<Music, Music, QSortThenBy> {
   QueryBuilder<Music, Music, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterSortBy> thenByStartTimeInMillisecond() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'startTimeInMillisecond', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Music, Music, QAfterSortBy> thenByStartTimeInMillisecondDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'startTimeInMillisecond', Sort.desc);
     });
   }
 
@@ -695,6 +908,18 @@ extension MusicQueryWhereDistinct on QueryBuilder<Music, Music, QDistinct> {
     });
   }
 
+  QueryBuilder<Music, Music, QDistinct> distinctByEndTimeInMillisecond() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'endTimeInMillisecond');
+    });
+  }
+
+  QueryBuilder<Music, Music, QDistinct> distinctByStartTimeInMillisecond() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'startTimeInMillisecond');
+    });
+  }
+
   QueryBuilder<Music, Music, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -721,6 +946,18 @@ extension MusicQueryProperty on QueryBuilder<Music, Music, QQueryProperty> {
   QueryBuilder<Music, int?, QQueryOperations> durationInMillisecondProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'durationInMillisecond');
+    });
+  }
+
+  QueryBuilder<Music, int?, QQueryOperations> endTimeInMillisecondProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'endTimeInMillisecond');
+    });
+  }
+
+  QueryBuilder<Music, int?, QQueryOperations> startTimeInMillisecondProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'startTimeInMillisecond');
     });
   }
 

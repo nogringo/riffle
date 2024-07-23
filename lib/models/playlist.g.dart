@@ -29,7 +29,14 @@ const PlaylistSchema = CollectionSchema(
   deserializeProp: _playlistDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {},
+  links: {
+    r'musics': LinkSchema(
+      id: 9149437152432575578,
+      name: r'musics',
+      target: r'Music',
+      single: false,
+    )
+  },
   embeddedSchemas: {},
   getId: _playlistGetId,
   getLinks: _playlistGetLinks,
@@ -43,12 +50,7 @@ int _playlistEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.name;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.name.length * 3;
   return bytesCount;
 }
 
@@ -67,9 +69,10 @@ Playlist _playlistDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Playlist();
+  final object = Playlist(
+    name: reader.readString(offsets[0]),
+  );
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[0]);
   return object;
 }
 
@@ -81,7 +84,7 @@ P _playlistDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -92,11 +95,12 @@ Id _playlistGetId(Playlist object) {
 }
 
 List<IsarLinkBase<dynamic>> _playlistGetLinks(Playlist object) {
-  return [];
+  return [object.musics];
 }
 
 void _playlistAttach(IsarCollection<dynamic> col, Id id, Playlist object) {
   object.id = id;
+  object.musics.attach(col, col.isar.collection<Music>(), r'musics', id);
 }
 
 extension PlaylistQueryWhereSort on QueryBuilder<Playlist, Playlist, QWhere> {
@@ -228,24 +232,8 @@ extension PlaylistQueryFilter
     });
   }
 
-  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'name',
-      ));
-    });
-  }
-
-  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'name',
-      ));
-    });
-  }
-
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -258,7 +246,7 @@ extension PlaylistQueryFilter
   }
 
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -273,7 +261,7 @@ extension PlaylistQueryFilter
   }
 
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -288,8 +276,8 @@ extension PlaylistQueryFilter
   }
 
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -379,7 +367,64 @@ extension PlaylistQueryObject
     on QueryBuilder<Playlist, Playlist, QFilterCondition> {}
 
 extension PlaylistQueryLinks
-    on QueryBuilder<Playlist, Playlist, QFilterCondition> {}
+    on QueryBuilder<Playlist, Playlist, QFilterCondition> {
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> musics(
+      FilterQuery<Music> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'musics');
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> musicsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'musics', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> musicsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'musics', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> musicsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'musics', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> musicsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'musics', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition>
+      musicsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'musics', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> musicsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'musics', lower, includeLower, upper, includeUpper);
+    });
+  }
+}
 
 extension PlaylistQuerySortBy on QueryBuilder<Playlist, Playlist, QSortBy> {
   QueryBuilder<Playlist, Playlist, QAfterSortBy> sortByName() {
@@ -440,7 +485,7 @@ extension PlaylistQueryProperty
     });
   }
 
-  QueryBuilder<Playlist, String?, QQueryOperations> nameProperty() {
+  QueryBuilder<Playlist, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
     });
