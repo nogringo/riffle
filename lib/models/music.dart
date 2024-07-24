@@ -91,7 +91,13 @@ class Music {
 
   void asyncConstructor() async {
     if (title == null) await fetchMetaData();
-    if (!thumbnailExists) await Api().downloadThumbnail(this);
+    if (!thumbnailExists) {
+      try {
+        await Api().downloadThumbnail(this);
+      } catch (e) {
+        print("no internet");
+      }
+    }
   }
 
   Future<ColorScheme?> getColorScheme(Brightness brightness) async {
